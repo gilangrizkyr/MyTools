@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>File & Image Optimizer Pro - Optimasi Gambar Berukuran Besar Cepat & Tanpa Penurunan Resolusi</title>
-  <meta name="description" content="Tool optimasi dan kompresi file gambar berukuran besar (16MB+ ke <=2MB) tanpa mengurangi resolusi dan kualitas visual secara signifikan.">
+  <meta name="description" content="Tool optimasi dan kompresi file gambar berukuran besar (16MB+ ke &le; 2MB) tanpa mengurangi resolusi dan kualitas visual secara signifikan.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -23,7 +23,10 @@
           <p class="tagline">Kompresi Ukuran File Maksimal • 100% Retensi Resolusi Asli</p>
         </div>
       </div>
-      <div class="header-status">
+      <div class="header-status" style="display: flex; gap: 12px; align-items: center;">
+        <a href="/dokumentasi.html" style="color: var(--ocean-primary); font-weight: 700; font-size: 0.88rem; text-decoration: none;">
+          <i data-lucide="book-open"></i> Dokumentasi Integrasi
+        </a>
         <span class="status-pill green">
           <i data-lucide="shield-check"></i> Processed 100% Client-Side
         </span>
@@ -71,11 +74,11 @@
               <div class="preset-grid">
                 <button type="button" class="preset-btn" data-preset="ultra">
                   <span class="preset-name">Ultra Web</span>
-                  <span class="preset-desc">Target <= 1 MB</span>
+                  <span class="preset-desc">Target &le; 1 MB</span>
                 </button>
                 <button type="button" class="preset-btn active" data-preset="balanced">
                   <span class="preset-name">Balanced</span>
-                  <span class="preset-desc">Target <= 2 MB</span>
+                  <span class="preset-desc">Target &le; 2 MB</span>
                 </button>
                 <button type="button" class="preset-btn" data-preset="high">
                   <span class="preset-name">Lossless Visual</span>
@@ -111,8 +114,8 @@
             <!-- Auto Target Toggle -->
             <div class="form-group toggle-group">
               <div class="toggle-info">
-                <span class="toggle-title">Smart Target Size (<= 2MB)</span>
-                <span class="toggle-desc">Menyesuaikan kualitas otomatis untuk mencapai file <= 2MB tanpa mengubah resolusi.</span>
+                <span class="toggle-title">Smart Target Size (&le; 2MB)</span>
+                <span class="toggle-desc">Menyesuaikan kualitas otomatis untuk mencapai file &le; 2MB tanpa mengubah resolusi.</span>
               </div>
               <label class="switch">
                 <input type="checkbox" id="autoTargetToggle" checked>

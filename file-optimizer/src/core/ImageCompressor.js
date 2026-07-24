@@ -17,7 +17,7 @@ export class ImageCompressor {
    */
   static async compress(file, options = {}) {
     const startTime = performance.now();
-    const {
+    let {
       format = 'image/webp',
       maxSizeBytes = 2 * 1024 * 1024, // 2 MB target
       quality = 0.82,
@@ -43,17 +43,27 @@ export class ImageCompressor {
 
     onProgress(50, 'Applying smart compression algorithms...');
 
-    // Determine compressed blob
     let finalBlob = null;
-    let finalQuality = quality;
 
-    if (autoTargetSize && file.size > maxSizeBytes && format !== 'image/png') {
-      // Perform adaptive quality estimation to reach <= maxSizeBytes without visual degradation
-      finalBlob = await this._adaptiveCompress(canvas, format, file.size, maxSizeBytes, quality, (p) => {
+    // PNG format in browser Canvas API is lossless and ignores quality parameter.
+    // If input is PNG and file > target, switch to webp for effective compression while preserving transparency & resolution.
+    let effectiveFormat = format;
+    if (format === 'image/png' && (autoTargetSize || file.size > maxSizeBytes)) {
+      effectiveFormat = 'image/webp';
+    }
+
+    if (autoTargetSize && file.size > maxSizeBytes) {
+      finalBlob = await this._adaptiveCompress(canvas, effectiveFormat, file.size, maxSizeBytes, quality, (p) => {
         onProgress(50 + Math.round(p * 0.4), 'Optimizing file buffer...');
       });
     } else {
-      finalBlob = await this._canvasToBlob(canvas, format, quality);
+      finalBlob = await this._canvasToBlob(canvas, effectiveFormat, quality);
+      
+      // If result is still over maxSizeBytes, run adaptive compression with webp
+      if (finalBlob.size > maxSizeBytes && effectiveFormat === 'image/png') {
+        effectiveFormat = 'image/webp';
+        finalBlob = await this._adaptiveCompress(canvas, effectiveFormat, file.size, maxSizeBytes, quality, () => {});
+      }
     }
 
     onProgress(95, 'Generating preview buffers...');
@@ -61,7 +71,7 @@ export class ImageCompressor {
     const endTime = performance.now();
     const processingTimeMs = Math.round(endTime - startTime);
 
-    // Fallback: If compressed blob is somehow larger than original (rare), return original format
+    // Fallback: If compressed blob is somehow larger than original (rare), use original
     if (finalBlob.size >= file.size && format === file.type) {
       finalBlob = file;
     }
@@ -83,7 +93,7 @@ export class ImageCompressor {
       width,
       height,
       resolutionString: `${width} × ${height} px`,
-      format: finalBlob.type || format,
+      format: finalBlob.type || effectiveFormat,
       originalUrl,
       compressedUrl,
       compressedBlob: finalBlob,
@@ -96,7 +106,7 @@ export class ImageCompressor {
    * Adaptive compression loop using binary quality search to target file size <= maxSizeBytes.
    */
   static async _adaptiveCompress(canvas, format, originalSizeBytes, targetSizeBytes, initialQuality, onStep) {
-    let minQ = 0.35; // Don't drop below 0.35 quality to prevent visual degradation
+    let minQ = 0.35; // Quality threshold to prevent visual degradation
     let maxQ = Math.min(1.0, initialQuality);
     let bestBlob = null;
     let iterations = 0;

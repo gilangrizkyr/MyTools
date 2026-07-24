@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Website Integration Demo - FileOptimizer SDK (Auto Compress &lt; 2MB)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    .demo-container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    .demo-card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 10px 30px rgba(2, 132, 199, 0.08);
+      border: 1px solid #e2e8f0;
+      margin-bottom: 24px;
+    }
+    .code-box {
+      background: #0f172a;
+      color: #38bdf8;
+      padding: 18px;
+      border-radius: 12px;
+      font-family: monospace;
+      font-size: 0.88rem;
+      overflow-x: auto;
+      margin: 16px 0;
+    }
+    .log-box {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 16px;
+      min-height: 120px;
+      font-family: monospace;
+      font-size: 0.85rem;
+      color: #334155;
+      line-height: 1.6;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+    .status-badge.waiting { background: #e2e8f0; color: #475569; }
+    .status-badge.compressing { background: #e0f2fe; color: #0284c7; }
+    .status-badge.done { background: #dcfce7; color: #166534; }
+  </style>
+  <script type="module" crossorigin src="/assets/demo-BLx_mW_r.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/ImageCompressor-C0v2OJfL.js">
+  <link rel="stylesheet" crossorigin href="/assets/style-BDHagpPD.css">
+</head>
+<body>
+  <div class="demo-container">
+    <header style="margin-bottom: 30px;">
+      <a href="/index.html" style="color: #0284c7; font-weight: 700; text-decoration: none;">&larr; Kembali ke Tool Optimizer Utama</a>
+      <h1 style="font-size: 1.8rem; font-weight: 800; margin-top: 10px; color: #0f172a;">
+        Demo Integrasi Website Eksternal
+      </h1>
+      <p style="color: #64748b;">
+        Simulasi penggunaan <code style="color: #0284c7;">FileOptimizerSDK</code> pada website pihak ketiga untuk mengompresi gambar berukuran besar menjadi <strong>kurang dari 2 MB</strong> secara otomatis sebelum diunggah.
+      </p>
+    </header>
+
+    <!-- Interactive Auto-Compress Input Demo Card -->
+    <div class="demo-card">
+      <h2 style="font-size: 1.2rem; font-weight: 700; color: #0f172a;">1. Auto-Compress Intercept pada &lt;input type="file"&gt;</h2>
+      <p style="font-size: 0.9rem; color: #475569; margin-top: 4px;">
+        Pilih file gambar besar (contoh 6 MB - 20 MB). SDK akan mengompresi gambar tersebut secara otomatis menjadi &lt; 2 MB dengan resolusi utuh.
+      </p>
+
+      <div style="margin: 20px 0;">
+        <label style="display: block; font-weight: 700; margin-bottom: 8px;">Pilih File Gambar:</label>
+        <input type="file" id="demoInput" accept="image/*" style="padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; width: 100%; max-width: 400px;">
+        <span id="statusBadge" class="status-badge waiting" style="margin-left: 10px;">Menunggu File...</span>
+      </div>
+
+      <div class="log-box" id="logBox">
+        [System Log] Siap menerima file upload...
+      </div>
+    </div>
+
+    <!-- Integration Code Tutorial Card -->
+    <div class="demo-card">
+      <h2 style="font-size: 1.2rem; font-weight: 700; color: #0f172a;">2. Cara Pasang di Website Anda</h2>
+      <p style="font-size: 0.9rem; color: #475569; margin-top: 4px;">
+        Tambahkan script SDK dan hubungkan ke elemen input upload:
+      </p>
+
+      <div class="code-box">
+// 1. Import SDK di Website Anda<br>
+import { FileOptimizerSDK } from './src/sdk/FileOptimizerSDK.js';<br><br>
+// 2. Hubungkan ke Input File Website Anda<br>
+FileOptimizerSDK.attachToInput('#demoInput', {<br>
+&nbsp;&nbsp;maxSizeBytes: 2 * 1024 * 1024, // Garansi ukuran &lt; 2 MB<br>
+&nbsp;&nbsp;onSuccess: (files) => {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;console.log('File terkompresi otomatis:', files[0]);<br>
+&nbsp;&nbsp;}<br>
+});
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
