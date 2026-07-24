@@ -1,98 +1,98 @@
 # 🛠️ MyTools Repository Index
 
-Repositori pusat untuk pengembangan berbagai macam utilitas web, *developer tools*, dan modul optimasi buatan Gilang.
+Central repository index for developing web utilities, developer tools, and optimization modules.
 
 ---
 
-## 🧰 Daftar Tools Repository
+## 🧰 Tools Directory
 
 ### 1. ⚡ File & Image Optimizer Pro (`file-optimizer`)
 
-> **Kategori**: Media & File Optimization | **Status**: `PRODUCTION READY`
+> **Category**: Media & File Optimization | **Status**: `PRODUCTION READY`
 
-Tool dan SDK profesional untuk mengompresi ukuran file gambar berukuran besar (seperti 16 MB menjadi **< 2 MB**) tanpa menurunkan resolusi (*width × height*) dan tetap mempertahankan ketajaman visual.
+Professional tool and integration SDK designed to compress large image files (such as 16 MB down to **< 2 MB**) without altering original dimensions (*width × height*) while preserving crisp visual quality.
 
-#### 📊 Spesifikasi & Performa:
-- **Ukuran File Target**: Dari 16 MB+ $\rightarrow$ **< 2 MB** (Penghematan hingga 85%–90%).
-- **Retensi Resolusi**: **100% Presisi** (Lebar × Tinggi piksel gambar asli dipertahankan utuh).
-- **Pemrosesan**: 100% *Client-Side Browser* (Aman, tanpa beban server, tanpa kirim data ke pihak ketiga).
-- **Format Didukung**: WebP, AVIF, JPEG, PNG.
+#### 📊 Specifications & Performance:
+- **Target File Size**: From 16 MB+ $\rightarrow$ **< 2 MB** (85%–90% file size reduction).
+- **Resolution Retention**: **100% Precision** (Original pixel width × height preserved intact).
+- **Processing Engine**: 100% *Client-Side Browser* (Secure, zero server load, zero third-party data transfer).
+- **Supported Formats**: WebP, AVIF, JPEG, PNG.
 
-#### ✨ Fitur Unggulan:
-- **Visual Split-Screen Comparison**: Fitur slider *Before vs After* interaktif untuk memeriksa ketajaman gambar secara visual.
-- **Website Integration SDK (`FileOptimizerSDK`)**: Modul yang dapat diintegrasikan ke website eksternal mana pun untuk meng-intercept upload file pengguna dan mengompresinya secara otomatis ke < 2 MB sebelum disimpan ke database.
-- **Batch Processing & ZIP Export**: Pemrosesan banyak file sekaligus dalam antrean asinkron dan ekspor langsung ke format `.zip`.
+#### ✨ Key Features:
+- **Visual Split-Screen Comparison**: Interactive *Before vs After* slider to visually inspect image sharpness prior to downloading.
+- **Website Integration SDK (`FileOptimizerSDK`)**: Embeddable module that enables external websites to intercept user file uploads and automatically compress them to < 2 MB before sending to backend database.
+- **Batch Processing & ZIP Export**: Concurrent multi-file processing queue with instant `.zip` archive export.
 
-#### 🔗 Akses & Tautan Cepat:
-- 📁 **Lokasi Folder**: [`file-optimizer/`](file:///home/Gilang/tools/file-optimizer)
-- 📖 **Dokumentasi Integrasi**: [`dokumentasi.html`](file:///home/Gilang/tools/file-optimizer/dokumentasi.html)
-- 🧪 **Live Demo Integrasi SDK**: [`integration-demo.html`](file:///home/Gilang/tools/file-optimizer/integration-demo.html)
-- 📄 **README Tool**: [`README.md`](file:///home/Gilang/tools/file-optimizer/README.md)
+#### 🔗 Quick Access & Links:
+- 📁 **Folder Location**: [`file-optimizer/`](file:///home/Gilang/tools/file-optimizer)
+- 📖 **Integration Documentation**: [`dokumentasi.html`](file:///home/Gilang/tools/file-optimizer/dokumentasi.html)
+- 🧪 **Live SDK Integration Demo**: [`integration-demo.html`](file:///home/Gilang/tools/file-optimizer/integration-demo.html)
+- 📄 **Tool README**: [`file-optimizer/README.md`](file:///home/Gilang/tools/file-optimizer/README.md)
 
 ---
 
-### ⏳ 2. [COMING SOON] Tool Ke-2: Document & PDF Optimizer (`pdf-optimizer`)
+### ⏳ 2. [COMING SOON] Tool #2: Document & PDF Optimizer (`pdf-optimizer`)
 
-> **Kategori**: Document Processing | **Status**: `PLANNED`
+> **Category**: Document Processing | **Status**: `PLANNED`
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────┐
 │                        🚧 COMING SOON - TOOL #2                        │
 ├────────────────────────────────────────────────────────────────────────┤
-│ Rencana Tool Ke-2: PDF & Document Optimizer                            │
-│ - Fungsi: Mengompresi file dokumen PDF besar (10 MB - 100 MB)          │
-│ - Fitur: Kompresi embedded stream & objek gambar di dalam PDF          │
-│ - Target: Pengurangan ukuran file dokumen tanpa merusak teks/vektor    │
+│ Planned Tool #2: PDF & Document Optimizer                              │
+│ - Purpose: Compress large PDF files (10 MB - 100 MB+)                  │
+│ - Key Features: Embedded stream compression & raster image optimization│
+│ - Target: Significant file size reduction without corrupting vector/txt│
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-### ⏳ 3. [COMING SOON] Tool Ke-3: Video & Media Compressor (`media-optimizer`)
+### ⏳ 3. [COMING SOON] Tool #3: Video & Media Compressor (`media-optimizer`)
 
-> **Kategori**: Video & Audio Processing | **Status**: `PLANNED`
+> **Category**: Video & Audio Processing | **Status**: `PLANNED`
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────┐
 │                        🚧 COMING SOON - TOOL #3                        │
 ├────────────────────────────────────────────────────────────────────────┤
-│ Rencana Tool Ke-3: Video & Audio Compressor                            │
-│ - Fungsi: Mengompresi bitrate & codec video/audio                     │
-│ - Fitur: FFmpeg WebAssembly Client-Side Processing                     │
+│ Planned Tool #3: Video & Audio Compressor                              │
+│ - Purpose: Compress video bitrate & audio codecs in-browser            │
+│ - Key Features: FFmpeg WebAssembly Client-Side Processing              │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 📁 Struktur Repositori Tools
+## 📁 Repository Directory Structure
 
 ```text
 tools/
-├── README.md                      # Index utama repositori tools ini
+├── README.md                      # Main tools repository index (English)
 └── file-optimizer/                # Tool #1: File & Image Optimizer Pro
-    ├── index.html                 # Antarmuka aplikasi utama (Bright Ocean Blue Theme)
-    ├── integration-demo.html      # Halaman demo integrasi website eksternal
-    ├── dokumentasi.html           # Dokumentasi teknis integrasi SDK
-    ├── package.json               # Konfigurasi dependensi Vite & npm
-    ├── vite.config.js             # Konfigurasi bundler & multi-entry build
-    ├── README.md                  # Dokumentasi teknis khusus file-optimizer
+    ├── index.html                 # Main web application UI (Bright Ocean Blue Theme)
+    ├── integration-demo.html      # External website SDK integration demo
+    ├── dokumentasi.html           # Technical integration documentation
+    ├── package.json               # Vite & npm dependency manifest
+    ├── vite.config.js             # Bundler & multi-entry configuration
+    ├── README.md                  # Detailed file-optimizer technical documentation
     └── src/
-        ├── style.css              # Design system Cerah Putih & Biru Laut
-        ├── main.js                # Logic antarmuka aplikasi web
+        ├── style.css              # Bright White & Ocean Blue design system
+        ├── main.js                # Web application integration layer
         ├── sdk/
-        │   └── FileOptimizerSDK.js # SDK Integrasi auto-compress < 2MB untuk website lain
+        │   └── FileOptimizerSDK.js # SDK for external website auto-compression (< 2MB)
         ├── core/
-        │   ├── ImageCompressor.js # Engine kompresi presisi resolusi
-        │   └── BatchProcessor.js  # Engine antrean batch pemrosesan banyak file
+        │   ├── ImageCompressor.js # High-precision resolution retention engine
+        │   └── BatchProcessor.js  # Concurrent multi-file batch queue manager
         └── utils/
-            └── formatters.js      # Utility penamaan file & format ukuran bytes
+            └── formatters.js      # Bytes formatting & filename utilities
 ```
 
 ---
 
-## 📝 Panduan Menambah Tool Baru
+## 📝 Guidelines for Adding New Tools
 
-Untuk menambahkan tool baru ke repositori ini:
-1. Buat direktori baru di dalam folder `tools/` (contoh: `pdf-optimizer/`).
-2. Masukkan file konfigurasi dasar (`package.json`, `index.html`, `README.md`).
-3. Update seksi `[COMING SOON]` pada file `README.md` utama ini menjadi status `PRODUCTION READY`.
+To add a new tool to this repository:
+1. Create a new directory under `tools/` using kebab-case naming (e.g., `pdf-optimizer/`).
+2. Add standard configuration files (`package.json`, `index.html`, `README.md`).
+3. Update the `[COMING SOON]` section in this main `README.md` to `PRODUCTION READY`.
