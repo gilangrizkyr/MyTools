@@ -68,8 +68,10 @@ Professional tool and integration SDK designed to compress large image files (su
 
 ```text
 tools/
+├── LICENSE                        # Proprietary Copyright License (Gilang)
 ├── README.md                      # Main tools repository index (English)
 └── file-optimizer/                # Tool #1: File & Image Optimizer Pro
+    ├── LICENSE                    # Tool License (All Rights Reserved)
     ├── index.html                 # Main web application UI (Bright Ocean Blue Theme)
     ├── integration-demo.html      # External website SDK integration demo
     ├── dokumentasi.html           # Technical integration documentation
@@ -94,5 +96,13 @@ tools/
 
 To add a new tool to this repository:
 1. Create a new directory under `tools/` using kebab-case naming (e.g., `pdf-optimizer/`).
-2. Add standard configuration files (`package.json`, `index.html`, `README.md`).
+2. Add standard configuration files (`package.json`, `index.html`, `README.md`, `LICENSE`).
 3. Update the `[COMING SOON]` section in this main `README.md` to `PRODUCTION READY`.
+
+---
+
+## 🔒 License & Copyright
+
+**Copyright © 2026 Gilang. All Rights Reserved.**
+
+This software, source code, SDK, and documentation are proprietary and confidential. Unauthorized copying, distribution, modification, reverse engineering, or commercial usage of any part of this repository without explicit prior written permission from **Gilang** is strictly prohibited.

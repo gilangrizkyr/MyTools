@@ -68,6 +68,7 @@ await fetch('/api/upload', { method: 'POST', body: formData });
 
 ```text
 file-optimizer/
+├── LICENSE                    # Proprietary Copyright License
 ├── index.html                 # Main web application entry point (Bright Ocean Blue Theme)
 ├── integration-demo.html      # External website SDK integration demo page
 ├── dokumentasi.html           # Technical integration documentation
@@ -102,3 +103,11 @@ npm run dev
 # 3. Build for Production
 npm run build
 ```
+
+---
+
+## 🔒 License & Copyright
+
+**Copyright © 2026 Gilang. All Rights Reserved.**
+
+This software, source code, SDK, and documentation are proprietary and confidential. Unauthorized copying, distribution, modification, reverse engineering, or commercial usage of any part of this repository without explicit prior written permission from **Gilang** is strictly prohibited.
