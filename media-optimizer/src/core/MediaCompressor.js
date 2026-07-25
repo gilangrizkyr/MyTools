@@ -1,16 +1,17 @@
 /**
- * Engine #3: Media Compressor Engine
+ * Core Media Compressor Engine
  * Client-side video and audio compression engine powered by Canvas API & MediaRecorder
  * Compresses video bitrate down to target size (< 15 MB) while preserving aspect ratio & audio clarity.
  * Optimized for 1GB+ MP4 videos & includes HEVC H.265 fallback protection.
  */
 export class MediaCompressor {
   /**
-   * Compress a media file (video or audio) to target file size (< 15 MB default).
+   * Compress a media file (video or audio) to target file size or ratio.
    * 
    * @param {File} file - Original video/audio file
    * @param {Object} options - Compression settings
-   * @param {number} [options.maxSizeBytes=15728640] - Target max size (default: 15 MB)
+   * @param {number} [options.maxSizeBytes=15728640] - Target max size in bytes
+   * @param {boolean} [options.forceCompress=false] - Force bitrate compression even if file is already smaller than maxSizeBytes
    * @param {string} [options.mode='video'] - 'video' or 'audio-only'
    * @param {function} [options.onProgress] - Progress callback
    * @returns {Promise<Object>} Compression result object
@@ -19,13 +20,15 @@ export class MediaCompressor {
     const startTime = performance.now();
     const {
       maxSizeBytes = 15 * 1024 * 1024,
+      forceCompress = false,
       mode = 'video',
       onProgress = () => {}
     } = options;
 
     onProgress(10, `Membaca metadata berkas video (${(file.size / 1024 / 1024).toFixed(1)} MB)...`);
 
-    if (file.size <= maxSizeBytes && mode === 'video') {
+    // Only skip compression if file is already small AND forceCompress is false
+    if (!forceCompress && file.size <= maxSizeBytes && mode === 'video') {
       const url = URL.createObjectURL(file);
       onProgress(100, 'Media optimization complete!');
       return {
@@ -38,7 +41,7 @@ export class MediaCompressor {
         compressedBlob: file,
         originalUrl: url,
         compressedUrl: url,
-        statusNote: 'Ukuran file sudah < 15 MB (Optimal)',
+        statusNote: 'Ukuran file sudah di bawah target (Optimal)',
         processingTimeMs: Math.round(performance.now() - startTime),
         timestamp: Date.now()
       };
@@ -58,7 +61,9 @@ export class MediaCompressor {
         targetW = 1280;
       }
 
-      const targetBits = (maxSizeBytes * 8) * 0.85;
+      // Calculate effective target size (either maxSizeBytes or 60% of original file size)
+      const effectiveTargetBytes = Math.min(maxSizeBytes, Math.floor(file.size * 0.60));
+      const targetBits = (effectiveTargetBytes * 8) * 0.85;
       const targetBitrate = Math.max(250000, Math.floor(targetBits / (duration || 5)));
 
       onProgress(55, 'Mengenkode stream video di browser...');
@@ -71,9 +76,12 @@ export class MediaCompressor {
       const processingTimeMs = Math.round(endTime - startTime);
 
       const originalUrl = URL.createObjectURL(file);
-      const compressedUrl = URL.createObjectURL(compressedBlob);
 
-      const savingsBytes = Math.max(0, file.size - compressedBlob.size);
+      // If re-encoded blob is larger than original file, fallback safely to original file
+      const finalBlob = (compressedBlob.size > 0 && compressedBlob.size < file.size) ? compressedBlob : file;
+      const compressedUrl = URL.createObjectURL(finalBlob);
+
+      const savingsBytes = Math.max(0, file.size - finalBlob.size);
       const savingsPercent = file.size > 0 ? ((savingsBytes / file.size) * 100).toFixed(1) : 0;
 
       onProgress(100, 'Pengoptimalan video selesai!');
@@ -81,22 +89,22 @@ export class MediaCompressor {
       return {
         fileName: file.name,
         originalSize: file.size,
-        compressedSize: compressedBlob.size,
+        compressedSize: finalBlob.size,
         savingsBytes,
         savingsPercent: Number(savingsPercent),
         duration: Math.round(duration),
         width: targetW,
         height: targetH,
-        compressedBlob,
+        compressedBlob: finalBlob,
         originalUrl,
         compressedUrl,
-        statusNote: 'Video berhasil dikompresi di browser',
+        statusNote: savingsBytes > 0 ? 'Video berhasil dikompresi di browser' : 'Ukuran asli sudah paling optimal',
         processingTimeMs,
         timestamp: Date.now()
       };
     } catch (err) {
       console.warn('[MediaCompressor] Dynamic video processing fallback:', err.message);
-      onProgress(100, 'Kodek video HEVC H.265/High Bitrate diproteksi aman (dikirim utuh).');
+      onProgress(100, 'Kodek video diproteksi aman (dikirim utuh).');
       const url = URL.createObjectURL(file);
       return {
         fileName: file.name,

@@ -71,7 +71,7 @@ function handleFileSelect(e) {
 }
 
 async function processInputMedia(file) {
-  if (!file.type.startsWith('video/') && !file.type.startsWith('audio/')) {
+  if (!file.type.startsWith('video/') && !file.type.startsWith('audio/') && !/\.(mp4|webm|mov|mkv)$/i.test(file.name)) {
     alert('Harap masukkan file video/media valid (MP4, WebM, MOV, MP3).');
     return;
   }
@@ -91,10 +91,13 @@ async function recompressCurrentMedia() {
     const preset = activePresetBtn ? activePresetBtn.dataset.preset : 'messaging';
 
     let maxSizeBytes = 15 * 1024 * 1024; // Default 15 MB
-    if (preset === 'web') maxSizeBytes = 10 * 1024 * 1024; // 10 MB
+    if (preset === 'web') maxSizeBytes = 5 * 1024 * 1024; // 5 MB High Compression
     else if (preset === 'email') maxSizeBytes = 25 * 1024 * 1024; // 25 MB
 
-    currentResult = await MediaCompressor.compress(currentFile, { maxSizeBytes });
+    currentResult = await MediaCompressor.compress(currentFile, {
+      maxSizeBytes,
+      forceCompress: true // Force active bitrate compression even for smaller files
+    });
 
     currentFileName.innerHTML = `<i data-lucide="film"></i> ${currentResult.fileName}`;
     durationBadge.textContent = formatDuration(currentResult.duration);
