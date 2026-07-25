@@ -98,6 +98,15 @@
           <p>Unggah file video besar (misal: 50 MB - 300 MB) untuk dikompresi menjadi kurang dari 15 MB tanpa di-watermark atau membebani server.</p>
         </div>
 
+        <!-- Spinner Overlay: Tampil saat kompresi video berjalan -->
+        <div id="spinnerOverlay" class="spinner-overlay hidden">
+          <div class="spinner-ring"></div>
+          <div class="spinner-text">
+            <div id="spinnerLabel">Mengompresi video...</div>
+            <div class="spinner-sub" id="spinnerSub">Mohon tunggu, proses berjalan di browser Anda</div>
+          </div>
+        </div>
+
         <!-- Preview Card -->
         <div id="previewCard" class="card preview-card hidden">
           <div class="card-header preview-header">
@@ -149,6 +158,10 @@
       <p>Media & Video Optimizer Pro &bull; 100% Client-Side Media Engine &bull; <code>/home/Gilang/tools/media-optimizer</code></p>
     </footer>
   </div>
+
+  <footer class="app-footer">
+    <p>Media &amp; Video Optimizer Pro &bull; 100% Client-Side Media Engine</p>
+  </footer>
 
   <script type="module" src="./src/main.js"></script>
 </body>

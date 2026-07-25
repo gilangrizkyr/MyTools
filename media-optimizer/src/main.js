@@ -12,6 +12,9 @@ const browseBtn = document.getElementById('browseBtn');
 const presetBtns = document.querySelectorAll('.preset-btn');
 
 const emptyState = document.getElementById('emptyState');
+const spinnerOverlay = document.getElementById('spinnerOverlay');
+const spinnerLabel = document.getElementById('spinnerLabel');
+const spinnerSub = document.getElementById('spinnerSub');
 const previewCard = document.getElementById('previewCard');
 
 const currentFileName = document.getElementById('currentFileName');
@@ -70,21 +73,16 @@ function handleFileSelect(e) {
   }
 }
 
-function setLoadingState(file) {
+function showSpinner(label = 'Mengompresi video...', sub = 'Mohon tunggu, proses berjalan di browser Anda') {
   emptyState.classList.add('hidden');
-  previewCard.classList.remove('hidden');
-  downloadSingleBtn.removeAttribute('href');
-  downloadSingleBtn.removeAttribute('download');
+  previewCard.classList.add('hidden');
+  spinnerOverlay.classList.remove('hidden');
+  spinnerLabel.textContent = label;
+  spinnerSub.textContent = sub;
+}
 
-  currentFileName.innerHTML = `<i data-lucide="film"></i> ${file.name}`;
-  durationBadge.textContent = 'Memproses...';
-  videoPreview.src = '';
-
-  metricOriginal.textContent = formatBytes(file.size);
-  metricCompressed.textContent = '—';
-  metricSavings.textContent = '—';
-  metricTime.textContent = '—';
-  createIcons({ icons });
+function hideSpinner() {
+  spinnerOverlay.classList.add('hidden');
 }
 
 async function processInputMedia(file) {
@@ -94,32 +92,38 @@ async function processInputMedia(file) {
   }
 
   currentFile = file;
-  setLoadingState(file);
   await recompressCurrentMedia();
 }
 
 async function recompressCurrentMedia() {
   if (!currentFile) return;
 
-  durationBadge.textContent = 'Mengompresi...';
-  metricCompressed.textContent = '—';
-  metricSavings.textContent = '—';
-  metricTime.textContent = '—';
+  const activePresetBtn = document.querySelector('.preset-btn.active');
+  const preset = activePresetBtn ? activePresetBtn.dataset.preset : 'messaging';
+
+  let maxSizeBytes = 15 * 1024 * 1024;
+  if (preset === 'web') maxSizeBytes = 5 * 1024 * 1024;
+  else if (preset === 'email') maxSizeBytes = 25 * 1024 * 1024;
+
+  showSpinner(
+    `Mengompresi ${currentFile.name}...`,
+    `Ukuran awal: ${formatBytes(currentFile.size)} → Target: ≤ ${formatBytes(maxSizeBytes)}`
+  );
 
   try {
-    const activePresetBtn = document.querySelector('.preset-btn.active');
-    const preset = activePresetBtn ? activePresetBtn.dataset.preset : 'messaging';
-
-    let maxSizeBytes = 15 * 1024 * 1024; // Default 15 MB
-    if (preset === 'web') maxSizeBytes = 5 * 1024 * 1024; // 5 MB
-    else if (preset === 'email') maxSizeBytes = 25 * 1024 * 1024; // 25 MB
-
     currentResult = await MediaCompressor.compress(currentFile, {
       maxSizeBytes,
-      forceCompress: true
+      forceCompress: true,
+      onProgress: (percent, statusText) => {
+        spinnerLabel.textContent = `${statusText}`;
+        spinnerSub.textContent = `Progress: ${percent}%`;
+      }
     });
 
-    // Populate real metrics from actual compression result
+    hideSpinner();
+
+    previewCard.classList.remove('hidden');
+
     currentFileName.innerHTML = `<i data-lucide="film"></i> ${currentResult.fileName}`;
     durationBadge.textContent = currentResult.duration > 0 ? formatDuration(currentResult.duration) : '—';
 
@@ -136,10 +140,8 @@ async function recompressCurrentMedia() {
     createIcons({ icons });
   } catch (err) {
     console.error('Failed to compress media', err);
-    durationBadge.textContent = 'Gagal';
-    metricCompressed.textContent = 'Error';
-    metricSavings.textContent = 'Error';
-    metricTime.textContent = '—';
+    hideSpinner();
+    emptyState.classList.remove('hidden');
     alert('Gagal mengompresi media: ' + err.message);
   }
 }
