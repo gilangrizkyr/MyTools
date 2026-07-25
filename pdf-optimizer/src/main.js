@@ -16,6 +16,9 @@ const browseBtn = document.getElementById('browseBtn');
 const presetBtns = document.querySelectorAll('.preset-btn');
 
 const emptyState = document.getElementById('emptyState');
+const spinnerOverlay = document.getElementById('spinnerOverlay');
+const spinnerLabel = document.getElementById('spinnerLabel');
+const spinnerSub = document.getElementById('spinnerSub');
 const previewCard = document.getElementById('previewCard');
 
 const currentFileName = document.getElementById('currentFileName');
@@ -85,11 +88,25 @@ async function processInputPdf(file) {
   await recompressCurrentPdf();
 }
 
+function showSpinner(label, sub) {
+  emptyState.classList.add('hidden');
+  previewCard.classList.add('hidden');
+  spinnerOverlay.classList.remove('hidden');
+  if (label) spinnerLabel.textContent = label;
+  if (sub) spinnerSub.textContent = sub;
+}
+
+function hideSpinner() {
+  spinnerOverlay.classList.add('hidden');
+}
+
 async function recompressCurrentPdf() {
   if (!currentFile) return;
 
+  showSpinner(`Mengompresi ${currentFile.name}...`, `Ukuran awal: ${formatBytes(currentFile.size)}`);
+
   try {
-    previewCard.classList.remove('hidden');
+    previewCard.classList.add('hidden');
 
     const activePresetBtn = document.querySelector('.preset-btn.active');
     const preset = activePresetBtn ? activePresetBtn.dataset.preset : 'balanced';
@@ -121,9 +138,14 @@ async function recompressCurrentPdf() {
     downloadSingleBtn.href = currentResult.compressedUrl;
     downloadSingleBtn.download = getOptimizedPdfFilename(currentResult.fileName);
 
+    hideSpinner();
+    previewCard.classList.remove('hidden');
+
     renderPdfPagePreview(currentResult.compressedBlob);
     createIcons({ icons });
   } catch (err) {
+    hideSpinner();
+    emptyState.classList.remove('hidden');
     console.error('Failed to compress PDF', err);
     alert('Gagal mengompresi PDF: ' + err.message);
   }

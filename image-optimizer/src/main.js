@@ -21,6 +21,9 @@ const presetBtns = document.querySelectorAll('.preset-btn');
 
 // Viewer DOM
 const emptyState = document.getElementById('emptyState');
+const spinnerOverlay = document.getElementById('spinnerOverlay');
+const spinnerLabel = document.getElementById('spinnerLabel');
+const spinnerSub = document.getElementById('spinnerSub');
 const previewCard = document.getElementById('previewCard');
 const batchCard = document.getElementById('batchCard');
 
@@ -195,11 +198,25 @@ function getCompressionOptions() {
   };
 }
 
+function showSpinner(label, sub) {
+  emptyState.classList.add('hidden');
+  previewCard.classList.add('hidden');
+  spinnerOverlay.classList.remove('hidden');
+  if (label) spinnerLabel.textContent = label;
+  if (sub) spinnerSub.textContent = sub;
+}
+
+function hideSpinner() {
+  spinnerOverlay.classList.add('hidden');
+}
+
 async function recompressCurrentFile() {
   if (!currentFile) return;
 
+  showSpinner(`Mengompresi ${currentFile.name}...`, `Ukuran awal: ${formatBytes(currentFile.size)}`);
+
   try {
-    previewCard.classList.remove('hidden');
+    previewCard.classList.add('hidden');
 
     const options = getCompressionOptions();
     currentResult = await ImageCompressor.compress(currentFile, options);
@@ -220,12 +237,17 @@ async function recompressCurrentFile() {
     metricResolution.textContent = `Retained (${currentResult.width}×${currentResult.height})`;
     metricTime.textContent = `${currentResult.processingTimeMs} ms`;
 
+    hideSpinner();
+    previewCard.classList.remove('hidden');
+
     // Download Single Setup
     downloadSingleBtn.href = currentResult.compressedUrl;
     downloadSingleBtn.download = getOptimizedFilename(currentResult.fileName, currentResult.format);
 
     createIcons({ icons });
   } catch (err) {
+    hideSpinner();
+    emptyState.classList.remove('hidden');
     console.error('Failed to compress current file', err);
     alert('Gagal mengompresi gambar: ' + err.message);
   }

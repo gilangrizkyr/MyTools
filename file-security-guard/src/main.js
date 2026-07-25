@@ -55,7 +55,17 @@ async function processFile(file) {
   const previewCard = document.getElementById('previewCard');
   const progressText = document.getElementById('progressText');
   const progressBar = document.getElementById('progressBar');
+  const spinnerOverlay = document.getElementById('spinnerOverlay');
+  const spinnerLabel = document.getElementById('spinnerLabel');
+  const spinnerSub = document.getElementById('spinnerSub');
+  const emptyState = document.getElementById('emptyState');
 
+  if (emptyState) emptyState.classList.add('hidden');
+  if (spinnerOverlay) {
+    spinnerLabel.textContent = `Memeriksa keamanan ${file.name}...`;
+    spinnerSub.textContent = `Ukuran: ${(file.size / 1024).toFixed(1)} KB`;
+    spinnerOverlay.classList.remove('hidden');
+  }
   progressCard.classList.remove('hidden');
   previewCard.classList.add('hidden');
 
@@ -67,6 +77,7 @@ async function processFile(file) {
       }
     });
 
+    if (spinnerOverlay) spinnerOverlay.classList.add('hidden');
     progressCard.classList.add('hidden');
     previewCard.classList.remove('hidden');
 
@@ -78,6 +89,7 @@ async function processFile(file) {
     document.getElementById('gpsStatus').textContent = securityResult.gpsStripped ? 'DIBERSIHKAN 100%' : 'TIDAK ADA DATA GPS';
 
   } catch (err) {
+    if (spinnerOverlay) spinnerOverlay.classList.add('hidden');
     progressCard.classList.add('hidden');
     alert('Pemeriksaan Keamanan Gagal: ' + err.message);
   }

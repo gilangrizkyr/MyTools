@@ -137,7 +137,15 @@
           <p>Unggah file gambar besar (misal: 16 MB) untuk melihat hasil kompresi instan dan perbandingan visual tajam sebelum & sesudah.</p>
         </div>
 
-        <!-- Single Item Preview Card -->
+        <!-- Spinner Overlay: Tampil saat kompresi gambar berjalan -->
+        <div id="spinnerOverlay" class="spinner-overlay hidden">
+          <div class="spinner-ring"></div>
+          <div class="spinner-text">
+            <div id="spinnerLabel">Mengompresi gambar...</div>
+            <div class="spinner-sub" id="spinnerSub">Mohon tunggu, proses berjalan di browser Anda</div>
+          </div>
+        </div>
+
         <div id="previewCard" class="card preview-card hidden">
           <div class="card-header preview-header">
             <div class="file-title-wrap">

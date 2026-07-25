@@ -55,7 +55,17 @@ async function processFile(file) {
   const previewCard = document.getElementById('previewCard');
   const progressText = document.getElementById('progressText');
   const progressBar = document.getElementById('progressBar');
+  const spinnerOverlay = document.getElementById('spinnerOverlay');
+  const spinnerLabel = document.getElementById('spinnerLabel');
+  const spinnerSub = document.getElementById('spinnerSub');
+  const emptyState = document.getElementById('emptyState');
 
+  if (emptyState) emptyState.classList.add('hidden');
+  if (spinnerOverlay) {
+    spinnerLabel.textContent = `Membuat thumbnail ${file.name}...`;
+    spinnerSub.textContent = `Ukuran: ${(file.size / 1024).toFixed(1)} KB`;
+    spinnerOverlay.classList.remove('hidden');
+  }
   progressCard.classList.remove('hidden');
   previewCard.classList.add('hidden');
 
@@ -68,6 +78,7 @@ async function processFile(file) {
       }
     });
 
+    if (spinnerOverlay) spinnerOverlay.classList.add('hidden');
     progressCard.classList.add('hidden');
     previewCard.classList.remove('hidden');
 
@@ -79,6 +90,7 @@ async function processFile(file) {
     document.getElementById('fileType').textContent = thumbnailResult.fileType.toUpperCase();
 
   } catch (err) {
+    if (spinnerOverlay) spinnerOverlay.classList.add('hidden');
     progressCard.classList.add('hidden');
     alert('Gagal membuat thumbnail: ' + err.message);
   }

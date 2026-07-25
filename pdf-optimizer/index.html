@@ -107,6 +107,15 @@
           <p>Unggah file PDF besar (misal: 10 MB - 50 MB) untuk dikompresi secara aman menjadi kurang dari 2 MB tanpa membebani server.</p>
         </div>
 
+        <!-- Spinner Overlay: Tampil saat kompresi PDF berjalan -->
+        <div id="spinnerOverlay" class="spinner-overlay hidden">
+          <div class="spinner-ring"></div>
+          <div class="spinner-text">
+            <div id="spinnerLabel">Mengompresi PDF...</div>
+            <div class="spinner-sub" id="spinnerSub">Mohon tunggu, proses berjalan di browser Anda</div>
+          </div>
+        </div>
+
         <!-- Preview Card -->
         <div id="previewCard" class="card preview-card hidden">
           <div class="card-header preview-header">
