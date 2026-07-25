@@ -1,12 +1,12 @@
 import { createWorker } from 'tesseract.js';
 
 /**
- * Core OCR Engine
- * Browser-based OCR scanner powered by Tesseract.js & Canvas Pre-Processing
+ * Core OCR Engine Pro
+ * High-precision browser-based OCR scanner powered by Tesseract.js & Smart Pattern Intelligence
  */
 export class OcrEngine {
   /**
-   * Scan image file and extract structured receipt data.
+   * Scan image file and extract structured receipt data with smart pattern matching.
    * 
    * @param {File|Blob} imageFile - Receipt or document image file
    * @param {Object} [options]
@@ -17,22 +17,22 @@ export class OcrEngine {
     const startTime = performance.now();
     const onProgress = options.onProgress || (() => {});
 
-    onProgress(10, 'Pre-processing image contrast...');
+    onProgress(10, 'Melakukan pre-processing & peningkatan kontras foto struk...');
 
     // Convert file to Image Bitmap & Pre-process contrast for thermal receipts
     const processedCanvas = await this._preprocessImage(imageFile);
 
-    onProgress(25, 'Initializing Tesseract OCR engine...');
+    onProgress(25, 'Memuat engine OCR cerdas Tesseract...');
 
     const worker = await createWorker('ind+eng');
 
-    onProgress(45, 'Scanning document text...');
+    onProgress(45, 'Membaca teks dari dokumen/struk...');
 
     const { data: { text } } = await worker.recognize(processedCanvas);
 
     await worker.terminate();
 
-    onProgress(85, 'Extracting structured fields...');
+    onProgress(85, 'Menganalisis & mengekstraksi data terstruktur (Nama Toko, Tanggal, Total)...');
 
     const merchant = this._extractMerchant(text);
     const date = this._extractDate(text);
@@ -43,7 +43,7 @@ export class OcrEngine {
     const endTime = performance.now();
     const processingTimeMs = Math.round(endTime - startTime);
 
-    onProgress(100, 'OCR scan complete!');
+    onProgress(100, 'Ekstraksi data OCR selesai 100%!');
 
     return {
       fileName: imageFile.name || 'scanned-receipt.png',
@@ -60,7 +60,7 @@ export class OcrEngine {
   }
 
   /**
-   * Enhance contrast and grayscale for thermal receipt images
+   * Adaptive Contrast Enhancement & Binarization for thermal receipts
    */
   static _preprocessImage(imageFile) {
     return new Promise((resolve, reject) => {
@@ -70,19 +70,22 @@ export class OcrEngine {
       img.onload = () => {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-        canvas.width = img.width;
-        canvas.height = img.height;
+        
+        // Scale up small images for better OCR resolution
+        const scale = img.width < 1000 ? 2 : 1;
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
 
-        ctx.drawImage(img, 0, 0);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-        // Grayscale & contrast enhancement
         const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const data = imgData.data;
 
+        // Grayscale conversion & dynamic adaptive thresholding
         for (let i = 0; i < data.length; i += 4) {
-          const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
-          // Increase contrast threshold
-          const v = avg > 140 ? 255 : (avg < 80 ? 0 : avg);
+          const gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+          // Sharpen text vs background contrast
+          const v = gray > 150 ? 255 : (gray < 90 ? 0 : gray);
           data[i] = v;
           data[i + 1] = v;
           data[i + 2] = v;
@@ -95,7 +98,7 @@ export class OcrEngine {
 
       img.onerror = () => {
         URL.revokeObjectURL(url);
-        reject(new Error('Failed to load image file for OCR.'));
+        reject(new Error('Gagal memuat gambar untuk proses OCR.'));
       };
 
       img.src = url;
@@ -103,61 +106,84 @@ export class OcrEngine {
   }
 
   /**
-   * Extract Store / Merchant Name
+   * Smart Merchant Recognition
    */
   static _extractMerchant(text) {
-    const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 2);
-    if (lines.length === 0) return 'Toko / Merchant Tidak Terdeteksi';
+    const knownBrands = [
+      'Indomaret', 'Alfamart', 'Starbucks', 'Lawson', 'Circle K', 'Superindo',
+      'Hypermart', 'Shell', 'Pertamina', 'Solaria', 'KFC', 'McDonald', 'McD',
+      'Kopi Kenangan', 'Mixue', 'Janji Jiwa', 'Gramedia', 'Guardian', 'Watsons',
+      'Century', 'Transmart', 'HokBen', 'Subway', 'Point Coffee', 'Excelso',
+      'J.CO', 'BreadTalk', 'Roti O', 'Roti\'O', 'Yogya', 'Hero', 'FamilyMart'
+    ];
 
-    // Scan first 4 non-empty lines for prominent merchant headers
-    for (let i = 0; i < Math.min(4, lines.length); i++) {
-      const line = lines[i];
-      if (!/total|harga|nota|struk|kasir|tanggal|terima|kasih|selamat|datang/i.test(line)) {
-        return line.replace(/[^a-zA-Z0-9\s&.-]/g, '').trim();
+    // Check for known brand names first
+    for (const brand of knownBrands) {
+      const regex = new RegExp(`\\b${brand}\\b`, 'i');
+      if (regex.test(text)) {
+        return brand;
       }
     }
 
-    return lines[0].replace(/[^a-zA-Z0-9\s&.-]/g, '').trim();
+    // Inspect first 5 lines of receipt for merchant header
+    const lines = text.split('\n')
+      .map(l => l.trim())
+      .filter(l => l.length > 2 && !/jl\.|jalan|telp|phone|npwp|receipt|nota|struk|kasir|tanggal|selamat|terima/i.test(l));
+
+    if (lines.length > 0) {
+      const cleanLine = lines[0].replace(/[^a-zA-Z0-9\s&.-]/g, '').trim();
+      if (cleanLine.length > 2) return cleanLine;
+    }
+
+    return 'Merchant / Toko';
   }
 
   /**
-   * Extract Transaction Date
+   * Smart Date Extraction
    */
   static _extractDate(text) {
-    const dateRegexes = [
+    const datePatterns = [
       /(\d{1,2}[\/\.-]\d{1,2}[\/\.-]\d{2,4})/,
+      /(\d{4}[\/\.-]\d{1,2}[\/\.-]\d{1,2})/,
       /(\d{1,2}\s+(?:Jan|Feb|Mar|Apr|Mei|Jun|Jul|Agu|Sep|Okt|Nov|Des|January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{2,4})/i
     ];
 
-    for (const regex of dateRegexes) {
-      const match = text.match(regex);
+    for (const pattern of datePatterns) {
+      const match = text.match(pattern);
       if (match) return match[1];
     }
 
     const now = new Date();
-    return `${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`;
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    return `${day}/${month}/${now.getFullYear()}`;
   }
 
   /**
-   * Extract Total Amount
+   * Smart Total Amount Extraction Engine
    */
   static _extractTotalAmount(text) {
     const lines = text.split('\n');
     let candidates = [];
 
-    const totalKeywords = /total|grand total|jumlah|bayar|rp|cash|tunai/i;
+    // Keywords that indicate total amount line
+    const grandTotalKeywords = /grand total|total bayar|total akhir|must pay|jumlah total|total netto/i;
+    const generalTotalKeywords = /total|jumlah|bayar|rp|debet|cash|tunai/i;
+    const excludeKeywords = /kembali|change|kembalian|subtotal|sub-total|pajak|tax|ppn|cashback/i;
 
+    // Pass 1: Check high-priority Grand Total lines
     for (const line of lines) {
-      if (totalKeywords.test(line)) {
-        const numbers = line.match(/(?:Rp\.?\s*)?([\d\.,]{3,})/gi);
-        if (numbers) {
-          for (const rawNum of numbers) {
-            const cleanNum = parseInt(rawNum.replace(/[^0-9]/g, ''), 10);
-            if (!isNaN(cleanNum) && cleanNum > 100) {
-              candidates.push(cleanNum);
-            }
-          }
-        }
+      if (grandTotalKeywords.test(line) && !excludeKeywords.test(line)) {
+        const val = this._parseCurrencyFromLine(line);
+        if (val > 0) return val;
+      }
+    }
+
+    // Pass 2: Check general Total lines
+    for (const line of lines) {
+      if (generalTotalKeywords.test(line) && !excludeKeywords.test(line)) {
+        const val = this._parseCurrencyFromLine(line);
+        if (val > 0) candidates.push(val);
       }
     }
 
@@ -165,30 +191,69 @@ export class OcrEngine {
       return Math.max(...candidates);
     }
 
-    // Fallback: extract all numbers in text and pick largest reasonable amount
-    const allNumbers = text.match(/\b\d{4,8}\b/g);
+    // Pass 3: Fallback - Extract all numbers and pick largest valid currency figure
+    const allNumbers = text.match(/(?:rp\.?\s*)?([\d\.,]{4,})/gi);
     if (allNumbers) {
-      const parsed = allNumbers.map(n => parseInt(n, 10)).filter(n => n > 500 && n < 100000000);
-      if (parsed.length > 0) return Math.max(...parsed);
+      for (const raw of allNumbers) {
+        const num = this._cleanNumber(raw);
+        if (num >= 1000 && num <= 100000000) {
+          candidates.push(num);
+        }
+      }
     }
 
-    return 0;
+    return candidates.length > 0 ? Math.max(...candidates) : 0;
   }
 
   static _extractSubtotal(text) {
-    const match = text.match(/subtotal[\s:]*(?:rp\.?\s*)?([\d\.,]+)/i);
-    if (match) {
-      return parseInt(match[1].replace(/[^0-9]/g, ''), 10) || 0;
+    const lines = text.split('\n');
+    for (const line of lines) {
+      if (/subtotal|sub-total/i.test(line)) {
+        const val = this._parseCurrencyFromLine(line);
+        if (val > 0) return val;
+      }
     }
     return 0;
   }
 
   static _extractTax(text) {
-    const match = text.match(/(?:ppn|pajak|tax)[\s:]*(?:rp\.?\s*)?([\d\.,]+)/i);
-    if (match) {
-      return parseInt(match[1].replace(/[^0-9]/g, ''), 10) || 0;
+    const lines = text.split('\n');
+    for (const line of lines) {
+      if (/ppn|pajak|tax/i.test(line)) {
+        const val = this._parseCurrencyFromLine(line);
+        if (val > 0) return val;
+      }
     }
     return 0;
+  }
+
+  static _parseCurrencyFromLine(line) {
+    const numbers = line.match(/([\d\.,]{3,})/g);
+    if (!numbers) return 0;
+
+    for (let i = numbers.length - 1; i >= 0; i--) {
+      const clean = this._cleanNumber(numbers[i]);
+      if (clean >= 100 && clean <= 100000000) {
+        return clean;
+      }
+    }
+
+    return 0;
+  }
+
+  static _cleanNumber(rawStr) {
+    if (!rawStr) return 0;
+    // Remove Rp prefix, spaces, and non-numeric chars except dot/comma
+    let clean = rawStr.replace(/[^0-9\.,]/g, '');
+
+    // Handle Indonesian currency formats (e.g. 145.000,00 or 145.000)
+    if (clean.includes(',') && clean.indexOf(',') === clean.length - 3) {
+      clean = clean.substring(0, clean.indexOf(',')); // remove decimals
+    }
+
+    clean = clean.replace(/[\.,]/g, '');
+    const result = parseInt(clean, 10);
+    return isNaN(result) ? 0 : result;
   }
 
   static _formatCurrency(amount) {
