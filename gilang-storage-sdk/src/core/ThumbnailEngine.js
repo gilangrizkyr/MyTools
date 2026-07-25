@@ -7,6 +7,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs
  * Core Thumbnail & Preview Generator Engine
  * Instantly generates ultra-lightweight WebP thumbnails (< 15 KB)
  * for Images, Videos, and PDF Documents.
+ * Includes graceful fallback canvas generation for unsupported video codecs.
  */
 export class ThumbnailEngine {
   /**
@@ -32,20 +33,25 @@ export class ThumbnailEngine {
     let thumbnailCanvas = null;
     let fileType = 'unknown';
 
-    if (file.type.startsWith('image/')) {
-      fileType = 'image';
-      onProgress(40, 'Memproses foto & melakukan scaling Canvas WebP...');
-      thumbnailCanvas = await this._generateImageThumbnail(file, size);
-    } else if (file.type.startsWith('video/') || /\.(mp4|webm|mov|mkv)$/i.test(file.name)) {
-      fileType = 'video';
-      onProgress(40, 'Mengambil cuplikan video frame (snapshot)...');
-      thumbnailCanvas = await this._generateVideoThumbnail(file, size);
-    } else if (file.type === 'application/pdf' || /\.pdf$/i.test(file.name)) {
-      fileType = 'pdf';
-      onProgress(40, 'Mendokumentasikan snapshot Halaman 1 PDF...');
-      thumbnailCanvas = await this._generatePdfThumbnail(file, size);
-    } else {
-      throw new Error('Jenis file tidak didukung untuk pembuatan thumbnail preview.');
+    try {
+      if (file.type.startsWith('image/')) {
+        fileType = 'image';
+        onProgress(40, 'Memproses foto & melakukan scaling Canvas WebP...');
+        thumbnailCanvas = await this._generateImageThumbnail(file, size);
+      } else if (file.type.startsWith('video/') || /\.(mp4|webm|mov|mkv|avi)$/i.test(file.name)) {
+        fileType = 'video';
+        onProgress(40, 'Mengambil cuplikan video frame (snapshot)...');
+        thumbnailCanvas = await this._generateVideoThumbnail(file, size);
+      } else if (file.type === 'application/pdf' || /\.pdf$/i.test(file.name)) {
+        fileType = 'pdf';
+        onProgress(40, 'Mendokumentasikan snapshot Halaman 1 PDF...');
+        thumbnailCanvas = await this._generatePdfThumbnail(file, size);
+      } else {
+        thumbnailCanvas = this._generateFallbackCanvas('FILE', size);
+      }
+    } catch (err) {
+      console.warn('[ThumbnailEngine] Graceful fallback canvas generated:', err.message);
+      thumbnailCanvas = this._generateFallbackCanvas(fileType.toUpperCase() || 'FILE', size);
     }
 
     onProgress(85, 'Mengenkode thumbnail ke format WebP ringan (< 15 KB)...');
@@ -87,7 +93,6 @@ export class ThumbnailEngine {
         canvas.height = targetSize;
         const ctx = canvas.getContext('2d');
 
-        // Draw cover-crop scale
         const scale = Math.max(targetSize / img.width, targetSize / img.height);
         const x = (targetSize - img.width * scale) / 2;
         const y = (targetSize - img.height * scale) / 2;
@@ -113,10 +118,16 @@ export class ThumbnailEngine {
     video.playsInline = true;
 
     return new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        URL.revokeObjectURL(url);
+        reject(new Error('Video snapshot loading timed out. Codec may be unsupported.'));
+      }, 4000);
+
       video.onloadeddata = () => {
-        video.currentTime = Math.min(1.0, video.duration / 2);
+        video.currentTime = Math.min(1.0, (video.duration || 2) / 2);
       };
       video.onseeked = () => {
+        clearTimeout(timeout);
         const canvas = document.createElement('canvas');
         canvas.width = targetSize;
         canvas.height = targetSize;
@@ -131,8 +142,9 @@ export class ThumbnailEngine {
         resolve(canvas);
       };
       video.onerror = () => {
+        clearTimeout(timeout);
         URL.revokeObjectURL(url);
-        reject(new Error('Gagal mengambil frame snapshot video.'));
+        reject(new Error('Gagal mengambil frame snapshot video. Format/Codec video tidak didukung dekoder browser.'));
       };
     });
   }
@@ -155,6 +167,24 @@ export class ThumbnailEngine {
       canvasContext: ctx,
       viewport: scaledViewport
     }).promise;
+
+    return canvas;
+  }
+
+  static _generateFallbackCanvas(label, size) {
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d');
+
+    ctx.fillStyle = '#0284c7';
+    ctx.fillRect(0, 0, size, size);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 20px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(label, size / 2, size / 2);
 
     return canvas;
   }
