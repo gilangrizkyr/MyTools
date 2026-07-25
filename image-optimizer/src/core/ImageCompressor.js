@@ -25,6 +25,12 @@ export class ImageCompressor {
       onProgress = () => {}
     } = options;
 
+    // Handle 'original' format selection
+    let targetFormat = format;
+    if (format === 'original' || !format) {
+      targetFormat = file.type || 'image/jpeg';
+    }
+
     onProgress(10, 'Loading image metadata...');
 
     // Load original image into bitmap/element to get dimensions
@@ -45,36 +51,18 @@ export class ImageCompressor {
 
     let finalBlob = null;
 
-    // PNG format in browser Canvas API is lossless and ignores quality parameter.
-    // If input is PNG and file > target, switch to webp for effective compression while preserving transparency & resolution.
-    let effectiveFormat = format;
-    if (format === 'image/png' && (autoTargetSize || file.size > maxSizeBytes)) {
-      effectiveFormat = 'image/webp';
-    }
-
-    if (autoTargetSize && file.size > maxSizeBytes) {
-      finalBlob = await this._adaptiveCompress(canvas, effectiveFormat, file.size, maxSizeBytes, quality, (p) => {
+    if (autoTargetSize && file.size > maxSizeBytes && targetFormat !== 'image/png') {
+      finalBlob = await this._adaptiveCompress(canvas, targetFormat, file.size, maxSizeBytes, quality, (p) => {
         onProgress(50 + Math.round(p * 0.4), 'Optimizing file buffer...');
       });
     } else {
-      finalBlob = await this._canvasToBlob(canvas, effectiveFormat, quality);
-      
-      // If result is still over maxSizeBytes, run adaptive compression with webp
-      if (finalBlob.size > maxSizeBytes && effectiveFormat === 'image/png') {
-        effectiveFormat = 'image/webp';
-        finalBlob = await this._adaptiveCompress(canvas, effectiveFormat, file.size, maxSizeBytes, quality, () => {});
-      }
+      finalBlob = await this._canvasToBlob(canvas, targetFormat, quality);
     }
 
     onProgress(95, 'Generating preview buffers...');
 
     const endTime = performance.now();
     const processingTimeMs = Math.round(endTime - startTime);
-
-    // Fallback: If compressed blob is somehow larger than original (rare), use original
-    if (finalBlob.size >= file.size && format === file.type) {
-      finalBlob = file;
-    }
 
     const originalUrl = URL.createObjectURL(file);
     const compressedUrl = URL.createObjectURL(finalBlob);
@@ -93,7 +81,7 @@ export class ImageCompressor {
       width,
       height,
       resolutionString: `${width} × ${height} px`,
-      format: finalBlob.type || effectiveFormat,
+      format: targetFormat,
       originalUrl,
       compressedUrl,
       compressedBlob: finalBlob,
