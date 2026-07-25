@@ -4,21 +4,40 @@ A collection of web utility tools, optimization modules, and developer scripts b
 
 ## Repository Index
 
-### 1. image-optimizer
+### 1. image-optimizer (`browser-image-optimizer-sdk`)
 
-Client-side image optimization library and SDK designed to compress high-resolution images (e.g., 16 MB down to under 2 MB) without altering pixel dimensions or sacrificing visual quality.
+High-fidelity client-side image optimization library and SDK designed to compress high-resolution images (e.g., 16 MB+ down to under 2 MB) while strictly preserving 1:1 original pixel dimensions (width × height) and pristine visual quality. Available as a live web application, SDK, and official NPM package.
 
-- **Status**: Production Ready
+- **Status**: Production Ready & Published to NPM
 - **Location**: [`image-optimizer/`](file:///home/Gilang/tools/image-optimizer)
-- **Tech Stack**: Vanilla JavaScript (ES Modules), HTML5 Canvas, OffscreenCanvas, Vite
+- **Official NPM Package**: [`browser-image-optimizer-sdk`](https://www.npmjs.com/package/browser-image-optimizer-sdk) (`npm i browser-image-optimizer-sdk`)
+- **Tech Stack**: Vanilla JavaScript (ES Modules), TypeScript Declarations (`index.d.ts`), HTML5 Canvas, OffscreenCanvas, Vite
+- **Live Web App**: [Launch Image Optimizer](https://gilangrizkyr.github.io/MyTools/image-optimizer/index.html)
 - **Documentation**: [SDK Integration Guide](file:///home/Gilang/tools/image-optimizer/dokumentasi.html) | [Live Integration Demo](file:///home/Gilang/tools/image-optimizer/integration-demo.html)
 
-#### Key Capabilities
-- **Zero Resolution Loss**: Maintains 1:1 original pixel dimensions (width × height).
-- **Target Size Engine**: Automatically adjusts compression factor to hit target file sizes (< 2 MB) for web upload constraints.
-- **Client-Side Processing**: Runs entirely in the browser using Web APIs for speed and privacy.
-- **Website SDK (`FileOptimizerSDK`)**: Intercepts HTML file inputs to automatically compress uploads before sending data to backend servers.
-- **Batch Processing**: Supports multi-file concurrent compression with ZIP archive generation.
+#### Key Capabilities & Architecture
+- **Zero Resolution Loss**: Preserves 1:1 original pixel dimensions (e.g., 6250 × 2946 px) with 0% cropping or dimension shrinkage.
+- **High-Fidelity Visual Engine**: Guarantees pristine visual clarity (32-bit RGBA 16.7M color depth) with quality floor scaling ($\ge 0.72$) and zero color shift or artifacts across WebP, JPEG, AVIF, and PNG.
+- **Foolproof Size Protection**: Enforces an absolute size safety rule that prevents file size from expanding above original file sizes.
+- **NPM Package Integration**: Installable via `npm install browser-image-optimizer-sdk` for instant use in Vue, React, Next.js, Angular, Svelte, Laravel, and Node.js applications.
+- **Auto-Hook Input Interceptor (`FileOptimizerSDK`)**: Automatically intercepts HTML `<input type="file">` elements to compress image uploads in the browser before sending data to backend servers.
+- **Batch Processing Engine**: Concurrent multi-file batch processing queue with ZIP archive export capabilities.
+
+#### Quick NPM Usage Example
+
+```bash
+npm install browser-image-optimizer-sdk
+```
+
+```javascript
+import { FileOptimizerSDK } from 'browser-image-optimizer-sdk';
+
+// Automatically intercept HTML file upload input and compress to < 2 MB
+FileOptimizerSDK.attachToInput('#uploadInput', {
+  maxSizeBytes: 2 * 1024 * 1024,
+  onSuccess: (files) => console.log('Compressed file ready for server upload:', files[0])
+});
+```
 
 ---
 
@@ -59,23 +78,25 @@ Client-side video and media optimization library and SDK built to compress large
 ```text
 tools/
 ├── LICENSE                        # Copyright License
-├── README.md                      # Repository Index
+├── README.md                      # Repository Index & Documentation
 ├── index.html                     # Central Dashboard Landing Page
-├── image-optimizer/               # Tool #1: Image Optimization Tool & SDK
+├── image-optimizer/               # Tool #1: Image Optimization Tool, SDK & NPM Package
 │   ├── LICENSE                    # Tool License
+│   ├── README.md                  # Tool Documentation & NPM Guide
+│   ├── index.js                   # NPM Package Main Entry Point
+│   ├── index.d.ts                 # TypeScript Declaration File
 │   ├── index.html                 # Application Interface
 │   ├── integration-demo.html      # Integration Demo Page
 │   ├── dokumentasi.html           # Technical SDK Documentation
-│   ├── package.json               # Package Manifest
+│   ├── package.json               # NPM Package Manifest (`browser-image-optimizer-sdk`)
 │   ├── vite.config.js             # Vite Configuration
-│   ├── README.md                  # Tool Documentation
 │   └── src/
 │       ├── style.css              # Stylesheet
 │       ├── main.js                # UI Logic
 │       ├── sdk/
 │       │   └── FileOptimizerSDK.js # Auto-compress SDK
 │       ├── core/
-│       │   ├── ImageCompressor.js # Precision compression engine
+│       │   ├── ImageCompressor.js # High-Fidelity compression engine
 │       │   └── BatchProcessor.js  # Batch queue manager
 │       └── utils/
 │           └── formatters.js      # Utility functions
