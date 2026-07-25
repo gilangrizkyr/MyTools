@@ -89,6 +89,37 @@ Client-side thumbnail and preview generator engine and SDK (`ThumbnailSDK`) desi
 
 ---
 
+### 6. file-security-guard
+
+Client-side file security verification, EXIF location metadata stripper, and SVG XSS sanitizer SDK (`SecurityGuardSDK`) built for Unara Storage.
+
+- **Status**: Production Ready
+- **Location**: [`file-security-guard/`](file:///home/Gilang/tools/file-security-guard)
+- **Tech Stack**: Vanilla JavaScript (ES Modules), HTML5 Canvas, Vite
+- **Documentation**: [SDK Integration Guide](file:///home/Gilang/tools/file-security-guard/dokumentasi.html) | [Live Integration Demo](file:///home/Gilang/tools/file-security-guard/integration-demo.html)
+
+#### Key Capabilities
+- **Magic Bytes Verification**: Inspects raw binary headers (e.g. JPEG, PNG, PDF, ZIP/Office) to reject disguised executable malware.
+- **EXIF GPS Location Stripper**: Re-encodes images to completely strip latitude/longitude GPS metadata from smartphone photos.
+- **SVG XSS Sanitizer**: Strips inline `<script>` tags from SVG vector files.
+
+---
+
+### 7. unara-storage-sdk (Master Unara Storage SDK)
+
+Unified Master Client SDK bundling Security Guard, Multi-Format Smart Compression (< 2 MB), and WebP Thumbnail Generation (< 15 KB) into a single 1-line integration module for Unara Storage.
+
+- **Status**: Production Ready
+- **Location**: [`unara-storage-sdk/`](file:///home/Gilang/tools/unara-storage-sdk)
+- **Tech Stack**: Vanilla JavaScript (ES Modules), JSZip, PDF.js, Vite
+- **Documentation**: [SDK Integration Guide](file:///home/Gilang/tools/unara-storage-sdk/dokumentasi.html) | [Live Integration Demo](file:///home/Gilang/tools/unara-storage-sdk/integration-demo.html)
+
+#### Key Capabilities
+- **1-Line Master Integration**: Single call `UnaraStorageSDK.process(file)` or `UnaraStorageSDK.attachToInput('#upload')`.
+- **All-in-One Pipeline**: Runs Security Guard (Magic Bytes + EXIF GPS Cleaner) $\rightarrow$ Smart Compressor (< 2 MB) $\rightarrow$ WebP Thumbnail Engine (< 15 KB) $\rightarrow$ Unara Storage Server Upload.
+
+---
+
 ## Directory Overview
 
 ```text
@@ -117,73 +148,11 @@ tools/
 │       └── utils/
 │           └── formatters.js      # Utility functions
 ├── pdf-optimizer/                 # Tool #2: PDF & Document Smart Optimizer
-│   ├── LICENSE                    # Tool License
-│   ├── index.html                 # Application Interface
-│   ├── integration-demo.html      # Integration Demo Page
-│   ├── dokumentasi.html           # Technical SDK Documentation
-│   ├── package.json               # Package Manifest
-│   ├── vite.config.js             # Vite Configuration
-│   ├── README.md                  # Tool Documentation
-│   └── src/
-│       ├── style.css              # Stylesheet
-│       ├── main.js                # UI Logic
-│       ├── sdk/
-│       │   └── PdfOptimizerSDK.js # Auto-compress PDF SDK
-│       ├── core/
-│       │   └── PdfCompressor.js  # PDF stream compression engine
-│       └── utils/
-│           └── formatters.js      # Bytes formatters
 ├── media-optimizer/               # Tool #3: Client-Side Video & Media Compressor
-│   ├── LICENSE                    # Tool License
-│   ├── index.html                 # Application Interface
-│   ├── integration-demo.html      # Integration Demo Page
-│   ├── dokumentasi.html           # Technical SDK Documentation
-│   ├── package.json               # Package Manifest
-│   ├── vite.config.js             # Vite Configuration
-│   ├── README.md                  # Tool Documentation
-│   └── src/
-│       ├── style.css              # Stylesheet
-│       ├── main.js                # UI Logic
-│       ├── sdk/
-│       │   └── MediaOptimizerSDK.js # Auto-compress Video SDK
-│       ├── core/
-│       │   └── MediaCompressor.js # Video stream compression engine
-│       └── utils/
-│           └── formatters.js      # Formatting utilities
 ├── doc-excel-optimizer/           # Tool #4: Office Document & Spreadsheet Optimizer
-│   ├── LICENSE                    # Tool License
-│   ├── index.html                 # Application Interface
-│   ├── integration-demo.html      # Integration Demo Page
-│   ├── dokumentasi.html           # Technical SDK Documentation
-│   ├── package.json               # Package Manifest
-│   ├── vite.config.js             # Vite Configuration
-│   ├── README.md                  # Tool Documentation
-│   └── src/
-│       ├── style.css              # Stylesheet
-│       ├── main.js                # UI Logic
-│       ├── sdk/
-│       │   └── DocOptimizerSDK.js # Auto-compress Office SDK
-│       ├── core/
-│       │   └── DocCompressor.js   # Office ZIP media compressor engine
-│       └── utils/
-│           └── formatters.js      # Formatting utilities
-└── thumbnail-generator/           # Tool #5: Smart WebP Thumbnail Generator
-    ├── LICENSE                    # Tool License
-    ├── index.html                 # Application Interface
-    ├── integration-demo.html      # Integration Demo Page
-    ├── dokumentasi.html           # Technical SDK Documentation
-    ├── package.json               # Package Manifest
-    ├── vite.config.js             # Vite Configuration
-    ├── README.md                  # Tool Documentation
-    └── src/
-        ├── style.css              # Stylesheet
-        ├── main.js                # UI Logic
-        ├── sdk/
-        │   └── ThumbnailSDK.js    # Auto-generate Thumbnail SDK
-        ├── core/
-        │   └── ThumbnailEngine.js # Multi-format snapshot engine
-        └── utils/
-            └── formatters.js      # Formatting utilities
+├── thumbnail-generator/           # Tool #5: Smart WebP Thumbnail Generator
+├── file-security-guard/           # Tool #6: File Security & EXIF GPS Cleaner
+└── unara-storage-sdk/             # Tool #7: Master Unara Storage Client SDK
 ```
 
 ---

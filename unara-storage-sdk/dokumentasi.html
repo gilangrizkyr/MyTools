@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dokumentasi UnaraStorageSDK - Master Client SDK Unara Storage</title>
+  <link rel="stylesheet" href="./src/style.css">
+  <style>
+    pre { background: #0f172a; color: #f8fafc; padding: 1.25rem; border-radius: 12px; overflow-x: auto; font-family: monospace; font-size: 0.9rem; margin: 1rem 0; }
+    code { color: #38bdf8; }
+  </style>
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="header-container">
+      <a href="../index.html" class="logo-group">
+        <div class="logo-icon"><i data-lucide="layers"></i></div>
+        <div>
+          <h1 class="logo-title">Unara Storage SDK</h1>
+          <span class="badge-tag">Dokumentasi SDK</span>
+        </div>
+      </a>
+      <nav class="nav-links">
+        <a href="./index.html" class="nav-link">Web App</a>
+        <a href="./integration-demo.html" class="nav-link">Live Demo SDK</a>
+        <a href="./dokumentasi.html" class="nav-link active">Dokumentasi SDK</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="app-container" style="max-width: 900px;">
+    <h2 style="font-size: 2rem; font-weight: 800; margin-bottom: 1rem;">Dokumentasi Master UnaraStorageSDK</h2>
+    <p style="color: var(--text-muted); margin-bottom: 2rem;">
+      Satu-satunya SDK master yang Anda butuhkan untuk menghubungkan website klien mana pun ke server penyimpanan Unara Storage.
+    </p>
+
+    <div class="card" style="margin-bottom: 2rem;">
+      <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 1rem;">1. Integrasi 1 Baris Kode Input Interceptor</h3>
+      <pre><code>import { UnaraStorageSDK } from './src/UnaraStorageSDK.js';
+
+UnaraStorageSDK.attachToInput('#fileUpload', {
+  apiEndpoint: 'https://unara-storage.com/api/upload',
+  onSuccess: (results) => {
+    console.log('File ter-sanitasi, terkompresi & ter-upload ke Unara Storage:', results[0]);
+  }
+});</code></pre>
+    </div>
+
+    <div class="card">
+      <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 1rem;">2. Panggilan Programatis Manual</h3>
+      <pre><code>import { UnaraStorageSDK } from './src/UnaraStorageSDK.js';
+
+const userFile = event.target.files[0];
+
+// Otomatis: Security Check ➔ Smart Compress (&lt; 2 MB) ➔ WebP Thumbnail (&lt; 15 KB)
+const result = await UnaraStorageSDK.process(userFile);
+
+console.log('File Siap Upload:', result.processedFile);
+console.log('Thumbnail Mini:', result.thumbnailFile);</code></pre>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>Copyright &copy; 2026 Gilang. All Rights Reserved. &bull; Proprietary Software</p>
+  </footer>
+
+  <script type="module">
+    import { createIcons, icons } from 'lucide';
+    createIcons({ icons });
+  </script>
+</body>
+</html>

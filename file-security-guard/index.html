@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>File Security Guard - Verifikasi Magic Bytes & Pembersih GPS EXIF</title>
+  <meta name="description" content="Verifikasi header biner murni (Magic Bytes), hapus lokasi GPS rahasia dari foto KTP/Kamera, dan sanitasi file dari malware.">
+  <link rel="stylesheet" href="./src/style.css">
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="header-container">
+      <a href="../index.html" class="logo-group">
+        <div class="logo-icon">
+          <i data-lucide="shield-check"></i>
+        </div>
+        <div>
+          <h1 class="logo-title">File Security Guard</h1>
+          <span class="badge-tag">Magic Bytes & EXIF Cleaner</span>
+        </div>
+      </a>
+      <nav class="nav-links">
+        <a href="./index.html" class="nav-link active">Web App</a>
+        <a href="./integration-demo.html" class="nav-link">Live Demo SDK</a>
+        <a href="./dokumentasi.html" class="nav-link">Dokumentasi SDK</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="app-container">
+    <div style="text-align: center; margin-bottom: 2.5rem;">
+      <h2 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 0.5rem;">Pemeriksa Keamanan & Sanitasi Privasi File</h2>
+      <p style="color: var(--text-muted); font-size: 1.1rem; max-width: 700px; margin: 0 auto;">
+        Periksa header biner murni <strong>Magic Bytes</strong> untuk mencegah malware terselubung dan bersihkan <strong>data lokasi GPS rumah rahasia</strong> dari foto kamera sebelum disimpan ke Unara Storage.
+      </p>
+    </div>
+
+    <div class="tool-grid">
+      <!-- Left: Upload & Progress Card -->
+      <div class="card">
+        <h3 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+          <i data-lucide="upload-cloud" style="color: var(--ocean-primary);"></i> Unggah File untuk Sanitasi Keamanan
+        </h3>
+
+        <div id="dropZone" class="dropzone">
+          <div class="dropzone-icon">
+            <i data-lucide="lock" style="width: 32px; height: 32px;"></i>
+          </div>
+          <h4 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem;">Tarik & lepaskan file di sini</h4>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem;">Mendukung Foto, Dokumen PDF, Office & Media Video</p>
+          <button type="button" class="btn btn-primary">Pilih File dari Komputer</button>
+          <input type="file" id="fileInput" style="display: none;">
+        </div>
+
+        <!-- Progress Container -->
+        <div id="progressCard" class="hidden" style="margin-top: 1.5rem; background: var(--ocean-light); padding: 1.25rem; border-radius: 12px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-weight: 700;">
+            <span id="progressText">Memeriksa integritas keamanan biner...</span>
+          </div>
+          <div style="background: #e2e8f0; height: 8px; border-radius: 4px; overflow: hidden;">
+            <div id="progressBar" style="background: var(--ocean-primary); width: 0%; height: 100%; transition: width 0.3s;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Preview Results Card -->
+      <div class="card">
+        <h3 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+          <i data-lucide="shield-alert" style="color: var(--ocean-primary);"></i> Laporan Status Keamanan & Privasi
+        </h3>
+
+        <div id="previewCard" class="hidden">
+          <div style="background: #ecfdf5; border: 1px solid #a7f3d0; padding: 1rem 1.25rem; border-radius: 12px; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
+            <i data-lucide="check-circle" style="color: var(--success); width: 28px; height: 28px;"></i>
+            <div>
+              <div id="fileName" style="font-weight: 800; font-size: 1.05rem;">file.jpg</div>
+              <small style="color: var(--success); font-weight: 700;">FILE AMAN 100% & LOLOS SANITASI PRIVASI</small>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+            <div class="metric-card">
+              <div id="hexSig" class="metric-val" style="font-size: 1.1rem; font-family: monospace;">FF D8 FF</div>
+              <div class="metric-lbl">Magic Bytes Signature</div>
+            </div>
+            <div class="metric-card">
+              <div id="mimeType" class="metric-val" style="font-size: 1.1rem;">image/jpeg</div>
+              <div class="metric-lbl">Format Biner Murni</div>
+            </div>
+            <div class="metric-card">
+              <div id="gpsStatus" class="metric-val" style="font-size: 1rem; color: var(--success);">DIBERSIHKAN</div>
+              <div class="metric-lbl">Data Lokasi GPS EXIF</div>
+            </div>
+            <div class="metric-card">
+              <div id="fileSize" class="metric-val" style="font-size: 1.1rem;">0 MB</div>
+              <div class="metric-lbl">Ukuran Berkas</div>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; font-size: 0.85rem; color: var(--text-muted);">
+            <span>Waktu Pemeriksaan: <strong id="procTime">0 ms</strong></span>
+            <span>Status Anti-Malware: <strong>TERVERIFIKASI AMAN</strong></span>
+          </div>
+
+          <button id="downloadBtn" type="button" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 1rem;">
+            <i data-lucide="download"></i> Unduh File yang Sudah Bersih & Aman
+          </button>
+        </div>
+
+        <div id="emptyState" style="text-align: center; padding: 4rem 1rem; color: var(--text-muted);">
+          <i data-lucide="shield-check" style="width: 48px; height: 48px; margin-bottom: 1rem; opacity: 0.4;"></i>
+          <p>Unggah file untuk memverifikasi biner Magic Bytes dan membersihkan lokasi GPS di sini.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>Copyright &copy; 2026 Gilang. All Rights Reserved. &bull; Proprietary Software</p>
+  </footer>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

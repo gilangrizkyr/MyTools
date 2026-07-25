@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dokumentasi SecurityGuardSDK - Verifikasi Biner & Pembersih GPS EXIF</title>
+  <link rel="stylesheet" href="./src/style.css">
+  <style>
+    pre { background: #0f172a; color: #f8fafc; padding: 1.25rem; border-radius: 12px; overflow-x: auto; font-family: monospace; font-size: 0.9rem; margin: 1rem 0; }
+    code { color: #38bdf8; }
+  </style>
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="header-container">
+      <a href="../index.html" class="logo-group">
+        <div class="logo-icon"><i data-lucide="shield-check"></i></div>
+        <div>
+          <h1 class="logo-title">File Security Guard</h1>
+          <span class="badge-tag">Dokumentasi SDK</span>
+        </div>
+      </a>
+      <nav class="nav-links">
+        <a href="./index.html" class="nav-link">Web App</a>
+        <a href="./integration-demo.html" class="nav-link">Live Demo SDK</a>
+        <a href="./dokumentasi.html" class="nav-link active">Dokumentasi SDK</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="app-container" style="max-width: 900px;">
+    <h2 style="font-size: 2rem; font-weight: 800; margin-bottom: 1rem;">Dokumentasi Integrasi SecurityGuardSDK</h2>
+    <p style="color: var(--text-muted); margin-bottom: 2rem;">
+      Otomatiskan verifikasi Magic Bytes dan hapus lokasi GPS rahasia dari foto pengguna sebelum diunggah ke Unara Storage.
+    </p>
+
+    <div class="card" style="margin-bottom: 2rem;">
+      <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 1rem;">1. Otomatiskan Input Validation Interceptor</h3>
+      <pre><code>import { SecurityGuardSDK } from './src/sdk/SecurityGuardSDK.js';
+
+SecurityGuardSDK.attachToInput('#fileUpload', {
+  onSuccess: (cleanFiles) => {
+    console.log('File terverifikasi aman & bebas GPS:', cleanFiles[0]);
+  }
+});</code></pre>
+    </div>
+
+    <div class="card">
+      <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 1rem;">2. Panggilan Fungsi Programatis</h3>
+      <pre><code>import { SecurityGuardSDK } from './src/sdk/SecurityGuardSDK.js';
+
+const userFile = event.target.files[0];
+const cleanFile = await SecurityGuardSDK.validate(userFile);
+
+// cleanFile telah dibersihkan dari data lokasi GPS rahasia</code></pre>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>Copyright &copy; 2026 Gilang. All Rights Reserved. &bull; Proprietary Software</p>
+  </footer>
+
+  <script type="module">
+    import { createIcons, icons } from 'lucide';
+    createIcons({ icons });
+  </script>
+</body>
+</html>
