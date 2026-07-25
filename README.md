@@ -23,22 +23,6 @@ High-fidelity client-side image optimization library and SDK designed to compres
 - **Auto-Hook Input Interceptor (`FileOptimizerSDK`)**: Automatically intercepts HTML `<input type="file">` elements to compress image uploads in the browser before sending data to backend servers.
 - **Batch Processing Engine**: Concurrent multi-file batch processing queue with ZIP archive export capabilities.
 
-#### Quick NPM Usage Example
-
-```bash
-npm install browser-image-optimizer-sdk
-```
-
-```javascript
-import { FileOptimizerSDK } from 'browser-image-optimizer-sdk';
-
-// Automatically intercept HTML file upload input and compress to < 2 MB
-FileOptimizerSDK.attachToInput('#uploadInput', {
-  maxSizeBytes: 2 * 1024 * 1024,
-  onSuccess: (files) => console.log('Compressed file ready for server upload:', files[0])
-});
-```
-
 ---
 
 ### 2. pdf-optimizer
@@ -70,6 +54,22 @@ Client-side video and media optimization library and SDK built to compress large
 - **Watermark-Free Client Execution**: Compresses video files entirely within the browser via Web APIs, avoiding third-party server uploads and watermark overlays.
 - **Adaptive Bitrate Scaling**: Automatically recalculates video bitrate constraints to achieve web target file sizes (< 15 MB).
 - **Website SDK (`MediaOptimizerSDK`)**: Intercepts HTML `<input type="file" accept="video/*">` elements to compress video uploads prior to form submission.
+
+---
+
+### 4. doc-excel-optimizer
+
+Client-side Office document and spreadsheet optimization library and SDK built to compress Word (`.docx`), Excel (`.xlsx`), and PowerPoint (`.pptx`) files while keeping 100% of text, formulas, layout formatting, and table definitions completely untouched.
+
+- **Status**: Production Ready
+- **Location**: [`doc-excel-optimizer/`](file:///home/Gilang/tools/doc-excel-optimizer)
+- **Tech Stack**: Vanilla JavaScript (ES Modules), JSZip, browser-image-optimizer-sdk, Vite
+- **Documentation**: [SDK Integration Guide](file:///home/Gilang/tools/doc-excel-optimizer/dokumentasi.html) | [Live Integration Demo](file:///home/Gilang/tools/doc-excel-optimizer/integration-demo.html)
+
+#### Key Capabilities
+- **0% Data Loss Guarantee**: Unpacks Office document ZIP archives and compresses embedded media assets in `word/media/`, `ppt/media/`, and `xl/media/` while keeping text, formulas, XML tags, and formatting 100% untouched.
+- **100% Client-Side Privacy**: Operates entirely within the browser via JSZip without server uploads.
+- **Website SDK (`DocOptimizerSDK`)**: Intercepts HTML `<input type="file" accept=".docx,.xlsx,.pptx">` elements to automatically compress Office document uploads.
 
 ---
 
@@ -117,7 +117,24 @@ tools/
 │       │   └── PdfCompressor.js  # PDF stream compression engine
 │       └── utils/
 │           └── formatters.js      # Bytes formatters
-└── media-optimizer/               # Tool #3: Client-Side Video & Media Compressor
+├── media-optimizer/               # Tool #3: Client-Side Video & Media Compressor
+│   ├── LICENSE                    # Tool License
+│   ├── index.html                 # Application Interface
+│   ├── integration-demo.html      # Integration Demo Page
+│   ├── dokumentasi.html           # Technical SDK Documentation
+│   ├── package.json               # Package Manifest
+│   ├── vite.config.js             # Vite Configuration
+│   ├── README.md                  # Tool Documentation
+│   └── src/
+│       ├── style.css              # Stylesheet
+│       ├── main.js                # UI Logic
+│       ├── sdk/
+│       │   └── MediaOptimizerSDK.js # Auto-compress Video SDK
+│       ├── core/
+│       │   └── MediaCompressor.js # Video stream compression engine
+│       └── utils/
+│           └── formatters.js      # Formatting utilities
+└── doc-excel-optimizer/           # Tool #4: Office Document & Spreadsheet Optimizer
     ├── LICENSE                    # Tool License
     ├── index.html                 # Application Interface
     ├── integration-demo.html      # Integration Demo Page
@@ -129,9 +146,9 @@ tools/
         ├── style.css              # Stylesheet
         ├── main.js                # UI Logic
         ├── sdk/
-        │   └── MediaOptimizerSDK.js # Auto-compress Video SDK
+        │   └── DocOptimizerSDK.js # Auto-compress Office SDK
         ├── core/
-        │   └── MediaCompressor.js # Video stream compression engine
+        │   └── DocCompressor.js   # Office ZIP media compressor engine
         └── utils/
             └── formatters.js      # Formatting utilities
 ```

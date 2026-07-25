@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Integration Demo - DocOptimizerSDK</title>
+  <link rel="stylesheet" href="./src/style.css">
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="header-container">
+      <a href="../index.html" class="logo-group">
+        <div class="logo-icon"><i data-lucide="file-spreadsheet"></i></div>
+        <div>
+          <h1 class="logo-title">Office Doc Optimizer</h1>
+          <span class="badge-tag">Live Demo SDK</span>
+        </div>
+      </a>
+      <nav class="nav-links">
+        <a href="./index.html" class="nav-link">Web App</a>
+        <a href="./integration-demo.html" class="nav-link active">Live Demo SDK</a>
+        <a href="./dokumentasi.html" class="nav-link">Dokumentasi SDK</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="app-container" style="max-width: 800px;">
+    <div class="card">
+      <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 1rem;">Simulasi Form Upload Website External / Unara Storage</h2>
+      <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+        Form di bawah ini menggunakan <code>DocOptimizerSDK.attachToInput()</code>. Pilih file Word (.docx), Excel (.xlsx), atau PowerPoint (.pptx) untuk melihat otomatisasi kompresi secara langsung.
+      </p>
+
+      <form id="demoForm">
+        <div style="margin-bottom: 1.5rem;">
+          <label style="display: block; font-weight: 700; margin-bottom: 0.5rem;">Unggah Dokumen Laporan / Presentasi</label>
+          <input type="file" id="demoDocInput" accept=".docx,.xlsx,.pptx" style="width: 100%; padding: 0.75rem; border: 1px solid var(--card-border); border-radius: 8px;">
+        </div>
+
+        <div id="demoStatus" class="hidden" style="background: var(--ocean-light); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+          <strong id="statusTitle" style="color: var(--ocean-primary);">Mengompresi Dokumen Office di Browser...</strong>
+          <div id="statusDetail" style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.25rem;"></div>
+        </div>
+
+        <button type="button" class="btn btn-primary" id="btnSimulate">Simulasikan Upload ke Server</button>
+      </form>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>Copyright &copy; 2026 Gilang. All Rights Reserved. &bull; Proprietary Software</p>
+  </footer>
+
+  <script type="module">
+    import { createIcons, icons } from 'lucide';
+    import { DocOptimizerSDK } from './src/sdk/DocOptimizerSDK.js';
+
+    createIcons({ icons });
+
+    const demoDocInput = document.getElementById('demoDocInput');
+    const demoStatus = document.getElementById('demoStatus');
+    const statusTitle = document.getElementById('statusTitle');
+    const statusDetail = document.getElementById('statusDetail');
+
+    DocOptimizerSDK.attachToInput('#demoDocInput', {
+      onStart: (files) => {
+        demoStatus.classList.remove('hidden');
+        statusTitle.textContent = 'Mencegat Input & Mengompresi Dokumen...';
+        statusDetail.textContent = `Memproses file ${files[0].name}...`;
+      },
+      onSuccess: (files) => {
+        const f = files[0];
+        statusTitle.textContent = 'Pengkompresan Berhasil (Data 100% Utuh)!';
+        if (f.optimizerMeta) {
+          statusDetail.textContent = `File asli: ${(f.optimizerMeta.originalSize / 1024 / 1024).toFixed(2)} MB ➔ Ukuran baru: ${(f.optimizerMeta.compressedSize / 1024 / 1024).toFixed(2)} MB (${f.optimizerMeta.savingsPercent}% hemat!)`;
+        }
+      }
+    });
+  </script>
+</body>
+</html>

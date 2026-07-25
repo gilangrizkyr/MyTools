@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Office Document Optimizer - Kompresi Word, Excel & PowerPoint 100% Client-Side</title>
+  <meta name="description" content="Kompresi file Word (.docx), Excel (.xlsx), dan PowerPoint (.pptx) 100% di browser tanpa mengubah teks, rumus, atau tata letak layout.">
+  <link rel="stylesheet" href="./src/style.css">
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="header-container">
+      <a href="../index.html" class="logo-group">
+        <div class="logo-icon">
+          <i data-lucide="file-spreadsheet"></i>
+        </div>
+        <div>
+          <h1 class="logo-title">Office Doc Optimizer</h1>
+          <span class="badge-tag">Word, Excel & PowerPoint</span>
+        </div>
+      </a>
+      <nav class="nav-links">
+        <a href="./index.html" class="nav-link active">Web App</a>
+        <a href="./integration-demo.html" class="nav-link">Live Demo SDK</a>
+        <a href="./dokumentasi.html" class="nav-link">Dokumentasi SDK</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="app-container">
+    <div style="text-align: center; margin-bottom: 2.5rem;">
+      <h2 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 0.5rem;">Kompresi Dokumen Office 100% Client-Side</h2>
+      <p style="color: var(--text-muted); font-size: 1.1rem; max-width: 700px; margin: 0 auto;">
+        Kompresi file <strong>Word (.docx)</strong>, <strong>Excel (.xlsx)</strong>, dan <strong>PowerPoint (.pptx)</strong> hingga 80%+ lebih ringan tanpa mengubah 1 huruf teks, rumus, atau tata letak layout.
+      </p>
+    </div>
+
+    <div class="tool-grid">
+      <!-- Left: Upload & Progress Card -->
+      <div class="card">
+        <h3 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+          <i data-lucide="upload-cloud" style="color: var(--ocean-primary);"></i> Unggah Dokumen Office
+        </h3>
+
+        <div id="dropZone" class="dropzone">
+          <div class="dropzone-icon">
+            <i data-lucide="file-text" style="width: 32px; height: 32px;"></i>
+          </div>
+          <h4 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem;">Tarik & lepaskan file Office di sini</h4>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem;">Mendukung format .docx, .xlsx, dan .pptx hingga 100 MB</p>
+          <button id="btnSelect" type="button" class="btn btn-primary">Pilih File dari Komputer</button>
+          <input type="file" id="fileInput" accept=".docx,.xlsx,.pptx" style="display: none;">
+        </div>
+
+        <!-- Progress Container -->
+        <div id="progressCard" class="hidden" style="margin-top: 1.5rem; background: var(--ocean-light); padding: 1.25rem; border-radius: 12px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-weight: 700;">
+            <span id="progressText">Memproses pengoptimalan dokumen...</span>
+          </div>
+          <div style="background: #e2e8f0; height: 8px; border-radius: 4px; overflow: hidden;">
+            <div id="progressBar" style="background: var(--ocean-primary); width: 0%; height: 100%; transition: width 0.3s;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Preview Results Card -->
+      <div class="card">
+        <h3 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+          <i data-lucide="bar-chart-2" style="color: var(--ocean-primary);"></i> Hasil Pengoptimalan Dokumen
+        </h3>
+
+        <div id="previewCard" class="hidden">
+          <div style="background: #f1f5f9; padding: 1rem 1.25rem; border-radius: 12px; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
+            <i data-lucide="file-check" style="color: var(--success); width: 28px; height: 28px;"></i>
+            <div>
+              <div id="fileName" style="font-weight: 800; font-size: 1.05rem;">document.docx</div>
+              <small style="color: var(--text-muted);">Teks, Rumus, & Layout 100% Utuh Terjaga</small>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+            <div class="metric-card">
+              <div id="origSize" class="metric-val">0 MB</div>
+              <div class="metric-lbl">Ukuran Awal</div>
+            </div>
+            <div class="metric-card" style="background: #ecfdf5;">
+              <div id="compSize" class="metric-val" style="color: var(--success);">0 MB</div>
+              <div class="metric-lbl">Ukuran Optimal</div>
+            </div>
+            <div class="metric-card">
+              <div id="savings" class="metric-val" style="color: var(--ocean-primary);">-0%</div>
+              <div class="metric-lbl">Penghematan Storage</div>
+            </div>
+            <div class="metric-card">
+              <div id="imgCount" class="metric-val">0 foto</div>
+              <div class="metric-lbl">Media Terkompresi</div>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; font-size: 0.85rem; color: var(--text-muted);">
+            <span>Waktu Proses: <strong id="procTime">0 ms</strong></span>
+            <span>Garansi: <strong>0% Data Loss</strong></span>
+          </div>
+
+          <button id="downloadBtn" type="button" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 1rem;">
+            <i data-lucide="download"></i> Unduh Hasil Dokumen (.docx / .xlsx / .pptx)
+          </button>
+        </div>
+
+        <div id="emptyState" style="text-align: center; padding: 4rem 1rem; color: var(--text-muted);">
+          <i data-lucide="file-search" style="width: 48px; height: 48px; margin-bottom: 1rem; opacity: 0.4;"></i>
+          <p>Unggah file Word, Excel, atau PowerPoint untuk melihat hasil kompresi di sini.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>Copyright &copy; 2026 Gilang. All Rights Reserved. &bull; Proprietary Software</p>
+  </footer>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dokumentasi DocOptimizerSDK - Integrasi Kompresi Word, Excel & PPT</title>
+  <link rel="stylesheet" href="./src/style.css">
+  <style>
+    pre { background: #0f172a; color: #f8fafc; padding: 1.25rem; border-radius: 12px; overflow-x: auto; font-family: monospace; font-size: 0.9rem; margin: 1rem 0; }
+    code { color: #38bdf8; }
+  </style>
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="header-container">
+      <a href="../index.html" class="logo-group">
+        <div class="logo-icon"><i data-lucide="file-spreadsheet"></i></div>
+        <div>
+          <h1 class="logo-title">Office Doc Optimizer</h1>
+          <span class="badge-tag">Dokumentasi SDK</span>
+        </div>
+      </a>
+      <nav class="nav-links">
+        <a href="./index.html" class="nav-link">Web App</a>
+        <a href="./integration-demo.html" class="nav-link">Live Demo SDK</a>
+        <a href="./dokumentasi.html" class="nav-link active">Dokumentasi SDK</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="app-container" style="max-width: 900px;">
+    <h2 style="font-size: 2rem; font-weight: 800; margin-bottom: 1rem;">Dokumentasi Integrasi DocOptimizerSDK</h2>
+    <p style="color: var(--text-muted); margin-bottom: 2rem;">
+      Integrasikan pengoptimalan otomatis file Word (.docx), Excel (.xlsx), dan PowerPoint (.pptx) ke dalam website atau sistem penyimpanan Unara Storage Anda.
+    </p>
+
+    <div class="card" style="margin-bottom: 2rem;">
+      <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 1rem;">1. Integrasi 1 Baris Kode HTML Input Interceptor</h3>
+      <p style="color: var(--text-muted); margin-bottom: 1rem;">Otomatis mencegat `<input type="file">` di formulir upload website Anda:</p>
+      <pre><code>import { DocOptimizerSDK } from './src/sdk/DocOptimizerSDK.js';
+
+DocOptimizerSDK.attachToInput('#docInput', {
+  onSuccess: (files) => {
+    console.log('Dokumen Word/Excel/PPT berhasil dikompresi:', files[0]);
+  }
+});</code></pre>
+    </div>
+
+    <div class="card">
+      <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 1rem;">2. Panggilan Fungsi Programatis</h3>
+      <pre><code>import { DocOptimizerSDK } from './src/sdk/DocOptimizerSDK.js';
+
+const originalDoc = event.target.files[0];
+const compressedDoc = await DocOptimizerSDK.compress(originalDoc);
+
+const formData = new FormData();
+formData.append('document', compressedDoc);
+
+await fetch('/api/upload', {
+  method: 'POST',
+  body: formData
+});</code></pre>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>Copyright &copy; 2026 Gilang. All Rights Reserved. &bull; Proprietary Software</p>
+  </footer>
+
+  <script type="module">
+    import { createIcons, icons } from 'lucide';
+    createIcons({ icons });
+  </script>
+</body>
+</html>
