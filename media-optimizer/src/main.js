@@ -58,7 +58,7 @@ function setupEventListeners() {
     btn.addEventListener('click', () => {
       presetBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      recompressCurrentMedia();
+      if (currentFile) recompressCurrentMedia();
     });
   });
 }
@@ -70,6 +70,23 @@ function handleFileSelect(e) {
   }
 }
 
+function setLoadingState(file) {
+  emptyState.classList.add('hidden');
+  previewCard.classList.remove('hidden');
+  downloadSingleBtn.removeAttribute('href');
+  downloadSingleBtn.removeAttribute('download');
+
+  currentFileName.innerHTML = `<i data-lucide="film"></i> ${file.name}`;
+  durationBadge.textContent = 'Memproses...';
+  videoPreview.src = '';
+
+  metricOriginal.textContent = formatBytes(file.size);
+  metricCompressed.textContent = '—';
+  metricSavings.textContent = '—';
+  metricTime.textContent = '—';
+  createIcons({ icons });
+}
+
 async function processInputMedia(file) {
   if (!file.type.startsWith('video/') && !file.type.startsWith('audio/') && !/\.(mp4|webm|mov|mkv)$/i.test(file.name)) {
     alert('Harap masukkan file video/media valid (MP4, WebM, MOV, MP3).');
@@ -77,34 +94,38 @@ async function processInputMedia(file) {
   }
 
   currentFile = file;
-  emptyState.classList.add('hidden');
+  setLoadingState(file);
   await recompressCurrentMedia();
 }
 
 async function recompressCurrentMedia() {
   if (!currentFile) return;
 
-  try {
-    previewCard.classList.remove('hidden');
+  durationBadge.textContent = 'Mengompresi...';
+  metricCompressed.textContent = '—';
+  metricSavings.textContent = '—';
+  metricTime.textContent = '—';
 
+  try {
     const activePresetBtn = document.querySelector('.preset-btn.active');
     const preset = activePresetBtn ? activePresetBtn.dataset.preset : 'messaging';
 
     let maxSizeBytes = 15 * 1024 * 1024; // Default 15 MB
-    if (preset === 'web') maxSizeBytes = 5 * 1024 * 1024; // 5 MB High Compression
+    if (preset === 'web') maxSizeBytes = 5 * 1024 * 1024; // 5 MB
     else if (preset === 'email') maxSizeBytes = 25 * 1024 * 1024; // 25 MB
 
     currentResult = await MediaCompressor.compress(currentFile, {
       maxSizeBytes,
-      forceCompress: true // Force active bitrate compression even for smaller files
+      forceCompress: true
     });
 
+    // Populate real metrics from actual compression result
     currentFileName.innerHTML = `<i data-lucide="film"></i> ${currentResult.fileName}`;
-    durationBadge.textContent = formatDuration(currentResult.duration);
+    durationBadge.textContent = currentResult.duration > 0 ? formatDuration(currentResult.duration) : '—';
 
     metricOriginal.textContent = formatBytes(currentResult.originalSize);
     metricCompressed.textContent = formatBytes(currentResult.compressedSize);
-    metricSavings.textContent = `-${currentResult.savingsPercent}%`;
+    metricSavings.textContent = currentResult.savingsPercent > 0 ? `-${currentResult.savingsPercent}%` : '0%';
     metricTime.textContent = `${currentResult.processingTimeMs} ms`;
 
     videoPreview.src = currentResult.compressedUrl;
@@ -115,6 +136,10 @@ async function recompressCurrentMedia() {
     createIcons({ icons });
   } catch (err) {
     console.error('Failed to compress media', err);
+    durationBadge.textContent = 'Gagal';
+    metricCompressed.textContent = 'Error';
+    metricSavings.textContent = 'Error';
+    metricTime.textContent = '—';
     alert('Gagal mengompresi media: ' + err.message);
   }
 }
