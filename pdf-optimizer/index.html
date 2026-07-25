@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDF & Document Smart Optimizer Pro - Kompresi PDF Client-Side Presisi Teks</title>
+  <meta name="description" content="Tool optimasi dan kompresi file PDF berukuran besar (10MB+ ke < 2MB) 100% Client-Side dengan jaminan privasi mutlak & ketajaman teks/vektor.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./src/style.css">
+  <script type="importmap">
+  {
+    "imports": {
+      "pdf-lib": "https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/+esm",
+      "pdfjs-dist": "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/+esm",
+      "lucide": "https://cdn.jsdelivr.net/npm/lucide@0.344.0/+esm"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div id="app" class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-icon">
+          <i data-lucide="file-text"></i>
+        </div>
+        <div class="brand-text">
+          <h1>PDF Optimizer <span class="badge-pro">PRO</span></h1>
+          <p class="tagline">Kompresi PDF Presisi Teks &bull; 100% Privasi Client-Side</p>
+        </div>
+      </div>
+      <div class="header-status" style="display: flex; gap: 12px; align-items: center;">
+        <a href="/dokumentasi.html" style="color: var(--ocean-primary); font-weight: 700; font-size: 0.88rem; text-decoration: none;">
+          <i data-lucide="book-open"></i> Dokumentasi Integrasi
+        </a>
+        <span class="status-pill green">
+          <i data-lucide="shield-check"></i> Processed 100% Client-Side
+        </span>
+      </div>
+    </header>
+
+    <!-- Main Grid Content -->
+    <main class="main-content">
+      <!-- Left Column: Controls & Upload Zone -->
+      <section class="sidebar-panel">
+        <!-- Upload Zone Card -->
+        <div class="card upload-card">
+          <div class="card-header">
+            <h2><i data-lucide="upload-cloud"></i> Unggah Dokumen PDF</h2>
+            <span class="sub-text">File rahasia aman (bebas server)</span>
+          </div>
+
+          <div id="dropzone" class="dropzone">
+            <input type="file" id="fileInput" accept=".pdf,application/pdf" class="file-input">
+            <div class="dropzone-content">
+              <div class="drop-icon">
+                <i data-lucide="file-plus"></i>
+              </div>
+              <div class="drop-text">
+                <p class="primary-text">Tarik & lepaskan file PDF di sini</p>
+                <p class="secondary-text">atau <button type="button" id="browseBtn" class="link-btn">pilih file PDF</button></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Compression Settings Card -->
+        <div class="card settings-card">
+          <div class="card-header">
+            <h2><i data-lucide="sliders"></i> Pengaturan Kompresi</h2>
+          </div>
+
+          <div class="settings-form">
+            <!-- Preset Options -->
+            <div class="form-group">
+              <label class="form-label">Preset Ukuran Target</label>
+              <div class="preset-grid">
+                <button type="button" class="preset-btn" data-preset="ultra">
+                  <span class="preset-name">Ultra Compact</span>
+                  <span class="preset-desc">Target &le; 1 MB</span>
+                </button>
+                <button type="button" class="preset-btn active" data-preset="balanced">
+                  <span class="preset-name">Balanced Web</span>
+                  <span class="preset-desc">Target &le; 2 MB</span>
+                </button>
+                <button type="button" class="preset-btn" data-preset="high">
+                  <span class="preset-name">High Precision</span>
+                  <span class="preset-desc">Teks & Vektor Presisi</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Column: PDF Preview & Metrics -->
+      <section class="viewer-panel">
+        <!-- Empty State -->
+        <div id="emptyState" class="empty-state">
+          <div class="empty-icon">
+            <i data-lucide="sparkles"></i>
+          </div>
+          <h3>Siap Mengompresi File PDF Anda</h3>
+          <p>Unggah file PDF besar (misal: 10 MB - 50 MB) untuk dikompresi secara aman menjadi kurang dari 2 MB tanpa membebani server.</p>
+        </div>
+
+        <!-- Preview Card -->
+        <div id="previewCard" class="card preview-card hidden">
+          <div class="card-header preview-header">
+            <div class="file-title-wrap">
+              <h2 id="currentFileName"><i data-lucide="file-text"></i> document.pdf</h2>
+              <span id="pageBadge" class="badge-blue">1 Halaman</span>
+            </div>
+            <div class="action-buttons">
+              <a id="downloadSingleBtn" href="#" download class="btn btn-primary">
+                <i data-lucide="download"></i> Unduh PDF Terkompresi
+              </a>
+            </div>
+          </div>
+
+          <!-- PDF Canvas Preview Container -->
+          <div class="pdf-preview-container">
+            <canvas id="pdfCanvas"></canvas>
+          </div>
+
+          <!-- Compression Metrics Grid -->
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <span class="metric-label">Ukuran Awal</span>
+              <span id="metricOriginal" class="metric-value">12.4 MB</span>
+            </div>
+            <div class="metric-card highlight">
+              <span class="metric-label">Ukuran Hasil</span>
+              <span id="metricCompressed" class="metric-value">1.6 MB</span>
+            </div>
+            <div class="metric-card success">
+              <span class="metric-label">Penghematan</span>
+              <span id="metricSavings" class="metric-value">-87.1%</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-label">Kualitas Teks</span>
+              <span id="metricVector" class="metric-value green-text">Preserved (100%)</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-label">Waktu Proses</span>
+              <span id="metricTime" class="metric-value">180 ms</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>PDF & Document Smart Optimizer Pro &bull; 100% Client-Side PDF Engine &bull; <code>/home/Gilang/tools/pdf-optimizer</code></p>
+    </footer>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dokumentasi Integrasi Website - MediaOptimizer SDK</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./src/style.css">
+  <style>
+    .doc-container { max-width: 1000px; margin: 0 auto; padding: 32px 20px; }
+    .doc-header, .doc-section { background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 32px; margin-bottom: 24px; box-shadow: var(--shadow-md); }
+    .doc-section h2 { font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin-bottom: 12px; }
+    .code-block { background: #0f172a; color: #38bdf8; padding: 20px; border-radius: 12px; font-family: monospace; font-size: 0.88rem; line-height: 1.6; overflow-x: auto; margin: 16px 0; }
+    .nav-links { display: flex; gap: 16px; margin-bottom: 20px; }
+    .nav-links a { color: var(--ocean-primary); font-weight: 700; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="doc-container">
+    <div class="nav-links">
+      <a href="/index.html">&larr; Beranda Tool Utama</a>
+      <span>&bull;</span>
+      <a href="/integration-demo.html">Coba Demo Live Integrasi &rarr;</a>
+    </div>
+
+    <header class="doc-header">
+      <h1 style="font-size: 2rem; font-weight: 800; color: #0f172a;">
+        Dokumentasi Integrasi MediaOptimizer SDK
+      </h1>
+      <p style="margin-top: 8px; color: #475569;">
+        Panduan integrasi modul kompresi media video/audio otomatis ke website Anda. Setiap kali pengguna mengunggah video besar (misal 50 MB - 300 MB), SDK akan mengompresinya secara otomatis menjadi <strong>kurang dari 15 MB (&lt; 15 MB)</strong> tanpa watermark dan tanpa mengirim file ke server eksternal.
+      </p>
+    </header>
+
+    <section class="doc-section">
+      <h2>1. Keuntungan Integrasi Client-Side Media Engine</h2>
+      <ul style="margin-left: 20px; color: #475569; line-height: 1.8;">
+        <li><strong>Bebas Watermark & Bebas Biaya Server:</strong> Pemrosesan video dilakukan 100% di browser pengguna tanpa membebani RAM/GPU server.</li>
+        <li><strong>Kualitas Suara & Layar Terjaga:</strong> Bitrate disesuaikan secara cerdas menjaga rasio layar dan kejelasan audio.</li>
+        <li><strong>Hemat Storage Database:</strong> Server hanya menyimpan file video terkompresi &lt; 15 MB.</li>
+      </ul>
+    </section>
+
+    <section class="doc-section">
+      <h2>2. Metode A: Auto-Attach pada Input File Video</h2>
+      <div class="code-block">
+import { MediaOptimizerSDK } from './src/sdk/MediaOptimizerSDK.js';
+
+// Hubungkan ke input file video di website Anda
+MediaOptimizerSDK.attachToInput('#videoInput', {
+  maxSizeBytes: 15 * 1024 * 1024, // Garansi ukuran &lt; 15 MB
+  onSuccess: (files) => {
+    console.log('File video terkompresi otomatis &lt; 15MB:', files[0]);
+  }
+});
+      </div>
+    </section>
+
+    <section class="doc-section">
+      <h2>3. Metode B: Kompresi Manual via API Function</h2>
+      <div class="code-block">
+import { MediaOptimizerSDK } from './src/sdk/MediaOptimizerSDK.js';
+
+const videoFile = document.getElementById('myVideoInput').files[0];
+
+const compressedVideo = await MediaOptimizerSDK.compress(videoFile, {
+  maxSizeBytes: 15 * 1024 * 1024
+});
+
+const formData = new FormData();
+formData.append('video', compressedVideo);
+await fetch('/api/upload-video', { method: 'POST', body: formData });
+      </div>
+    </section>
+  </div>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Media & Video Compressor Pro - Kompresi Video Client-Side Tanpa Watermark</title>
+  <meta name="description" content="Tool optimasi dan kompresi file video & audio (100MB+ ke < 15MB) 100% Client-Side dengan jaminan privasi mutlak & bebas watermark.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./src/style.css">
+</head>
+<body>
+  <div id="app" class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-icon">
+          <i data-lucide="video"></i>
+        </div>
+        <div class="brand-text">
+          <h1>Media & Video Optimizer <span class="badge-pro">PRO</span></h1>
+          <p class="tagline">Kompresi Video Bitrate &bull; 100% Client-Side Tanpa Watermark</p>
+        </div>
+      </div>
+      <div class="header-status" style="display: flex; gap: 12px; align-items: center;">
+        <a href="/dokumentasi.html" style="color: var(--ocean-primary); font-weight: 700; font-size: 0.88rem; text-decoration: none;">
+          <i data-lucide="book-open"></i> Dokumentasi Integrasi
+        </a>
+        <span class="status-pill green">
+          <i data-lucide="shield-check"></i> Processed 100% Client-Side
+        </span>
+      </div>
+    </header>
+
+    <!-- Main Grid Content -->
+    <main class="main-content">
+      <!-- Left Column: Controls & Upload Zone -->
+      <section class="sidebar-panel">
+        <!-- Upload Zone Card -->
+        <div class="card upload-card">
+          <div class="card-header">
+            <h2><i data-lucide="upload-cloud"></i> Unggah Video / Media</h2>
+            <span class="sub-text">Mendukung MP4, WebM, MOV s.d. 300 MB</span>
+          </div>
+
+          <div id="dropzone" class="dropzone">
+            <input type="file" id="fileInput" accept="video/*,audio/*" class="file-input">
+            <div class="dropzone-content">
+              <div class="drop-icon">
+                <i data-lucide="film"></i>
+              </div>
+              <div class="drop-text">
+                <p class="primary-text">Tarik & lepaskan file video di sini</p>
+                <p class="secondary-text">atau <button type="button" id="browseBtn" class="link-btn">pilih file video</button></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Compression Settings Card -->
+        <div class="card settings-card">
+          <div class="card-header">
+            <h2><i data-lucide="sliders"></i> Pengaturan Kompresi</h2>
+          </div>
+
+          <div class="settings-form">
+            <!-- Preset Options -->
+            <div class="form-group">
+              <label class="form-label">Preset Ukuran Target</label>
+              <div class="preset-grid">
+                <button type="button" class="preset-btn" data-preset="web">
+                  <span class="preset-name">Web Upload Limit</span>
+                  <span class="preset-desc">Target &le; 10 MB</span>
+                </button>
+                <button type="button" class="preset-btn active" data-preset="messaging">
+                  <span class="preset-name">Messaging Limit</span>
+                  <span class="preset-desc">Target &le; 15 MB</span>
+                </button>
+                <button type="button" class="preset-btn" data-preset="email">
+                  <span class="preset-name">Email Limit</span>
+                  <span class="preset-desc">Target &le; 25 MB</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Column: Video Preview & Metrics -->
+      <section class="viewer-panel">
+        <!-- Empty State -->
+        <div id="emptyState" class="empty-state">
+          <div class="empty-icon">
+            <i data-lucide="sparkles"></i>
+          </div>
+          <h3>Siap Mengompresi File Video Anda</h3>
+          <p>Unggah file video besar (misal: 50 MB - 300 MB) untuk dikompresi menjadi kurang dari 15 MB tanpa di-watermark atau membebani server.</p>
+        </div>
+
+        <!-- Preview Card -->
+        <div id="previewCard" class="card preview-card hidden">
+          <div class="card-header preview-header">
+            <div class="file-title-wrap">
+              <h2 id="currentFileName"><i data-lucide="film"></i> video.mp4</h2>
+              <span id="durationBadge" class="badge-blue">00:00</span>
+            </div>
+            <div class="action-buttons">
+              <a id="downloadSingleBtn" href="#" download class="btn btn-primary">
+                <i data-lucide="download"></i> Unduh Video Terkompresi
+              </a>
+            </div>
+          </div>
+
+          <!-- Video Player Container -->
+          <div class="video-preview-container">
+            <video id="videoPreview" controls playsinline></video>
+          </div>
+
+          <!-- Compression Metrics Grid -->
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <span class="metric-label">Ukuran Awal</span>
+              <span id="metricOriginal" class="metric-value">120 MB</span>
+            </div>
+            <div class="metric-card highlight">
+              <span class="metric-label">Ukuran Hasil</span>
+              <span id="metricCompressed" class="metric-value">14.2 MB</span>
+            </div>
+            <div class="metric-card success">
+              <span class="metric-label">Penghematan</span>
+              <span id="metricSavings" class="metric-value">-88.1%</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-label">Watermark</span>
+              <span class="metric-value green-text">Bebas Watermark</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-label">Waktu Proses</span>
+              <span id="metricTime" class="metric-value">220 ms</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>Media & Video Optimizer Pro &bull; 100% Client-Side Media Engine &bull; <code>/home/Gilang/tools/media-optimizer</code></p>
+    </footer>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
