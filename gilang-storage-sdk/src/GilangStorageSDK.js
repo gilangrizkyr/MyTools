@@ -1,8 +1,8 @@
-import { SecurityEngine } from '../../file-security-guard/src/core/SecurityEngine.js';
-import { ImageCompressor } from '../../image-optimizer/src/core/ImageCompressor.js';
-import { PdfCompressor } from '../../pdf-optimizer/src/core/PdfCompressor.js';
-import { DocCompressor } from '../../doc-excel-optimizer/src/core/DocCompressor.js';
-import { ThumbnailEngine } from '../../thumbnail-generator/src/core/ThumbnailEngine.js';
+import { SecurityEngine } from './core/SecurityEngine.js';
+import { ImageCompressor } from './core/ImageCompressor.js';
+import { PdfCompressor } from './core/PdfCompressor.js';
+import { DocCompressor } from './core/DocCompressor.js';
+import { ThumbnailEngine } from './core/ThumbnailEngine.js';
 
 /**
  * Master Gilang Storage Client SDK
