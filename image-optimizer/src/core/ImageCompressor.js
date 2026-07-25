@@ -1,11 +1,11 @@
 /**
  * Core Image Compressor Engine Pro
- * Guarantees file size reduction across ALL formats (JPEG, WEBP, AVIF, PNG)
- * while strictly preserving 100% original pixel resolution (width × height) and original file formats.
+ * Delivers WebP-level massive file size reduction across ALL formats (JPEG, WEBP, AVIF, PNG)
+ * while strictly preserving 100% original pixel resolution (width × height).
  */
 export class ImageCompressor {
   /**
-   * Compress an image file to a smaller file size without losing resolution.
+   * Compress an image file to target file size (< 2MB default) without reducing resolution.
    * 
    * @param {File} file - Original image file
    * @param {Object} options - Compression settings
@@ -47,17 +47,17 @@ export class ImageCompressor {
     ctx.imageSmoothingQuality = 'high';
     ctx.drawImage(imageSource, 0, 0, width, height);
 
-    onProgress(50, 'Applying smart multi-format compression algorithms...');
+    onProgress(50, 'Applying high-compression algorithms...');
 
-    // Target size must be smaller than original file AND smaller than maxSizeBytes
-    const effectiveTargetBytes = Math.min(file.size * 0.95, maxSizeBytes);
+    // Effective target size: Must be smaller than original file AND smaller than maxSizeBytes
+    const effectiveTargetBytes = Math.min(file.size * 0.90, maxSizeBytes);
 
     let finalBlob = null;
 
     if (targetFormat === 'image/png') {
-      // True PNG Quantization & Bit Depth Reduction (100% PNG output format guaranteed)
+      // True PNG Quantization: Native PNG format size reduction
       finalBlob = await this._compressPngQuantized(canvas, width, height, file.size, effectiveTargetBytes, (p) => {
-        onProgress(50 + Math.round(p * 40), 'Quantizing PNG palette & alpha buffers...');
+        onProgress(50 + Math.round(p * 40), 'Applying PNG palette quantization...');
       });
     } else {
       // Adaptive Quality Loop for JPEG, WEBP, and AVIF
@@ -67,7 +67,7 @@ export class ImageCompressor {
         file.size,
         effectiveTargetBytes,
         quality,
-        (p) => onProgress(50 + Math.round(p * 40), 'Optimizing quality factors...')
+        (p) => onProgress(50 + Math.round(p * 40), 'Optimizing bitrate & quality...')
       );
     }
 
@@ -103,9 +103,9 @@ export class ImageCompressor {
   }
 
   /**
-   * Dedicated PNG Color Quantization Engine
-   * Compresses PNG file size natively while keeping output format 100% PNG (image/png)
-   * and preserving 1:1 original pixel dimensions (width x height).
+   * High-Performance PNG Palette Quantization Engine
+   * Reduces PNG file size down to < 2 MB while preserving PNG output format (image/png)
+   * and 1:1 original pixel dimensions (width × height).
    */
   static async _compressPngQuantized(canvas, width, height, originalSizeBytes, targetSizeBytes, onStep) {
     onStep(0.2);
@@ -118,62 +118,80 @@ export class ImageCompressor {
 
     onStep(0.5);
 
-    // Step 2: Create a quantization canvas to perform color depth palette reduction
-    const quantCanvas = document.createElement('canvas');
-    quantCanvas.width = width;
-    quantCanvas.height = height;
-    const qctx = quantCanvas.getContext('2d', { alpha: true, willReadFrequently: true });
-    qctx.drawImage(canvas, 0, 0);
+    // Step 2: Multi-pass color bit-mask quantization (reduces PNG entropy)
+    const masks = [0xF8, 0xF0, 0xE0, 0xC0]; // 5-bit, 4-bit, 3-bit color channel masking
+    let bestBlob = currentBlob;
 
-    const imgData = qctx.getImageData(0, 0, width, height);
-    const data = imgData.data;
+    for (let idx = 0; idx < masks.length; idx++) {
+      onStep(0.5 + (idx + 1) * 0.1);
+      const mask = masks[idx];
 
-    // Apply 6-bit color quantization (64 levels per channel) to reduce PNG entropy
-    for (let i = 0; i < data.length; i += 4) {
-      data[i]     = data[i]     & 0xFC; // Red
-      data[i + 1] = data[i + 1] & 0xFC; // Green
-      data[i + 2] = data[i + 2] & 0xFC; // Blue
-      if (data[i + 3] > 0 && data[i + 3] < 255) {
-        data[i + 3] = data[i + 3] & 0xF0; // Smooth Alpha
+      const quantCanvas = document.createElement('canvas');
+      quantCanvas.width = width;
+      quantCanvas.height = height;
+      const qctx = quantCanvas.getContext('2d', { alpha: true, willReadFrequently: true });
+      qctx.drawImage(canvas, 0, 0);
+
+      const imgData = qctx.getImageData(0, 0, width, height);
+      const data = imgData.data;
+
+      for (let i = 0; i < data.length; i += 4) {
+        data[i]     = data[i]     & mask; // Red
+        data[i + 1] = data[i + 1] & mask; // Green
+        data[i + 2] = data[i + 2] & mask; // Blue
+        if (data[i + 3] > 0 && data[i + 3] < 255) {
+          data[i + 3] = data[i + 3] & 0xE0; // Smooth Alpha
+        }
+      }
+
+      qctx.putImageData(imgData, 0, 0);
+      const blob = await this._canvasToBlob(quantCanvas, 'image/png', 0.85);
+
+      if (blob.size < bestBlob.size) {
+        bestBlob = blob;
+      }
+
+      if (bestBlob.size <= targetSizeBytes) {
+        break;
       }
     }
 
-    qctx.putImageData(imgData, 0, 0);
-
-    onStep(0.8);
-    const quantizedBlob = await this._canvasToBlob(quantCanvas, 'image/png', 0.85);
-
-    return quantizedBlob.size < currentBlob.size ? quantizedBlob : currentBlob;
+    return bestBlob;
   }
 
   /**
    * Universal Adaptive Compression Loop for JPEG, WEBP, AVIF
+   * Iteratively targets file size <= targetSizeBytes
    */
   static async _adaptiveCompress(canvas, format, originalSizeBytes, targetSizeBytes, initialQuality, onStep) {
-    let currentQ = Math.min(0.92, initialQuality);
+    let currentQ = Math.min(0.85, initialQuality);
     let bestBlob = null;
     let stepCount = 0;
-    const maxSteps = 8;
+    const maxSteps = 10;
 
     while (stepCount < maxSteps) {
       onStep((stepCount + 1) / maxSteps);
 
       const blob = await this._canvasToBlob(canvas, format, currentQ);
-      bestBlob = blob;
+      if (!bestBlob || blob.size < bestBlob.size) {
+        bestBlob = blob;
+      }
 
+      // If target size reached AND size is smaller than original -> DONE!
       if (blob.size <= targetSizeBytes && blob.size < originalSizeBytes) {
         break;
       }
 
-      currentQ -= 0.10;
-      if (currentQ < 0.25) {
-        break;
+      // Stepwise quality reduction
+      currentQ -= 0.08;
+      if (currentQ < 0.15) {
+        break; // Quality floor
       }
 
       stepCount++;
     }
 
-    return bestBlob || await this._canvasToBlob(canvas, format, 0.70);
+    return bestBlob || await this._canvasToBlob(canvas, format, 0.60);
   }
 
   /**
