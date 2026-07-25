@@ -21,10 +21,6 @@ const presetBtns = document.querySelectorAll('.preset-btn');
 
 // Viewer DOM
 const emptyState = document.getElementById('emptyState');
-const loadingState = document.getElementById('loadingState');
-const progressBar = document.getElementById('progressBar');
-const progressText = document.getElementById('progressText');
-const loadingStatus = document.getElementById('loadingStatus');
 const previewCard = document.getElementById('previewCard');
 const batchCard = document.getElementById('batchCard');
 
@@ -203,23 +199,9 @@ async function recompressCurrentFile() {
   if (!currentFile) return;
 
   try {
-    emptyState.classList.add('hidden');
-    previewCard.classList.add('hidden');
-    loadingState.classList.remove('hidden');
+    previewCard.classList.remove('hidden');
 
-    progressBar.style.width = '10%';
-    progressText.textContent = '10% Selesai';
-    loadingStatus.textContent = 'Memuat metadata & gambar...';
-
-    const options = {
-      ...getCompressionOptions(),
-      onProgress: (percent, statusText) => {
-        progressBar.style.width = `${percent}%`;
-        progressText.textContent = `${percent}% Selesai`;
-        if (statusText) loadingStatus.textContent = statusText;
-      }
-    };
-
+    const options = getCompressionOptions();
     currentResult = await ImageCompressor.compress(currentFile, options);
 
     // Update UI elements
@@ -243,14 +225,8 @@ async function recompressCurrentFile() {
     downloadSingleBtn.download = getOptimizedFilename(currentResult.fileName, currentResult.format);
 
     createIcons({ icons });
-
-    // Smoothly reveal preview card when 100% ready
-    loadingState.classList.add('hidden');
-    previewCard.classList.remove('hidden');
   } catch (err) {
     console.error('Failed to compress current file', err);
-    loadingState.classList.add('hidden');
-    previewCard.classList.remove('hidden');
     alert('Gagal mengompresi gambar: ' + err.message);
   }
 }

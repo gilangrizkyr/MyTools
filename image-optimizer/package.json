@@ -1,10 +1,34 @@
 {
-  "name": "image-optimizer",
-  "private": true,
+  "name": "browser-image-optimizer-sdk",
   "version": "1.0.0",
-  "author": "Gilang",
-  "license": "UNLICENSED",
+  "description": "High-fidelity client-side image compression SDK guaranteeing < 2 MB output across JPEG, PNG, WEBP, AVIF with 1:1 original resolution retention.",
+  "main": "index.js",
+  "module": "index.js",
+  "types": "index.d.ts",
   "type": "module",
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "src/core/",
+    "src/sdk/",
+    "src/utils/"
+  ],
+  "keywords": [
+    "image-compressor",
+    "client-side-compression",
+    "browser-image-optimizer",
+    "jpeg-optimizer",
+    "png-quantizer",
+    "webp-compressor",
+    "file-upload-sdk"
+  ],
+  "author": "Gilang <https://github.com/gilangrizkyr>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gilangrizkyr/MyTools.git",
+    "directory": "image-optimizer"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
