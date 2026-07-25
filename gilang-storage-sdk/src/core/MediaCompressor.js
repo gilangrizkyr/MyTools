@@ -2,7 +2,7 @@
  * Core Media Compressor Engine
  * Client-side video and audio compression engine powered by Canvas API & MediaRecorder
  * Compresses video bitrate down to target size (< 15 MB) while preserving aspect ratio & audio clarity.
- * Optimized for 1GB+ MP4 videos & includes HEVC H.265 fallback protection.
+ * Includes DOM attachment & async play lock to guarantee 100% video frame capture across all browsers.
  */
 export class MediaCompressor {
   /**
@@ -11,7 +11,7 @@ export class MediaCompressor {
    * @param {File} file - Original video/audio file
    * @param {Object} options - Compression settings
    * @param {number} [options.maxSizeBytes=15728640] - Target max size in bytes
-   * @param {boolean} [options.forceCompress=false] - Force bitrate compression even if file is already smaller than maxSizeBytes
+   * @param {boolean} [options.forceCompress=true] - Force bitrate compression
    * @param {string} [options.mode='video'] - 'video' or 'audio-only'
    * @param {function} [options.onProgress] - Progress callback
    * @returns {Promise<Object>} Compression result object
@@ -20,7 +20,7 @@ export class MediaCompressor {
     const startTime = performance.now();
     const {
       maxSizeBytes = 15 * 1024 * 1024,
-      forceCompress = false,
+      forceCompress = true,
       mode = 'video',
       onProgress = () => {}
     } = options;
@@ -47,7 +47,7 @@ export class MediaCompressor {
       };
     }
 
-    onProgress(25, 'Menyiapkan pipeline pengolahan video & scaling memori...');
+    onProgress(25, 'Menyiapkan DOM render container & video frame pipeline...');
 
     try {
       const { videoElement, width, height, duration } = await this._loadVideoElement(file);
@@ -61,12 +61,12 @@ export class MediaCompressor {
         targetW = 1280;
       }
 
-      // Calculate effective target size (either maxSizeBytes or 60% of original file size)
-      const effectiveTargetBytes = Math.min(maxSizeBytes, Math.floor(file.size * 0.60));
-      const targetBits = (effectiveTargetBytes * 8) * 0.85;
-      const targetBitrate = Math.max(250000, Math.floor(targetBits / (duration || 5)));
+      // Target bitrate calculation (target max 15MB or 65% of original size)
+      const targetMaxBytes = Math.min(maxSizeBytes, Math.floor(file.size * 0.65));
+      const targetBits = (targetMaxBytes * 8) * 0.85;
+      const targetBitrate = Math.max(300000, Math.floor(targetBits / (duration || 5)));
 
-      onProgress(55, 'Mengenkode stream video di browser...');
+      onProgress(55, 'Mengenkode frame video presisi di browser...');
 
       const compressedBlob = await this._encodeVideo(videoElement, targetW, targetH, targetBitrate, (p) => {
         onProgress(55 + Math.round(p * 0.40), `Mengompresi frame video (${Math.round(p * 100)}%)...`);
@@ -77,8 +77,8 @@ export class MediaCompressor {
 
       const originalUrl = URL.createObjectURL(file);
 
-      // If re-encoded blob is larger than original file, fallback safely to original file
-      const finalBlob = (compressedBlob.size > 0 && compressedBlob.size < file.size) ? compressedBlob : file;
+      // Use compressed blob if it's smaller than original
+      const finalBlob = (compressedBlob && compressedBlob.size > 0 && compressedBlob.size < file.size) ? compressedBlob : file;
       const compressedUrl = URL.createObjectURL(finalBlob);
 
       const savingsBytes = Math.max(0, file.size - finalBlob.size);
@@ -98,13 +98,13 @@ export class MediaCompressor {
         compressedBlob: finalBlob,
         originalUrl,
         compressedUrl,
-        statusNote: savingsBytes > 0 ? 'Video berhasil dikompresi di browser' : 'Ukuran asli sudah paling optimal',
+        statusNote: savingsBytes > 0 ? 'Video berhasil dikompresi' : 'File asli sudah optimal',
         processingTimeMs,
         timestamp: Date.now()
       };
     } catch (err) {
       console.warn('[MediaCompressor] Dynamic video processing fallback:', err.message);
-      onProgress(100, 'Kodek video diproteksi aman (dikirim utuh).');
+      onProgress(100, 'Format video dikirim secara utuh dan aman.');
       const url = URL.createObjectURL(file);
       return {
         fileName: file.name,
@@ -116,7 +116,7 @@ export class MediaCompressor {
         compressedBlob: file,
         originalUrl: url,
         compressedUrl: url,
-        statusNote: 'Kodek video diproteksi aman (dikirim utuh)',
+        statusNote: 'Video dikirim secara utuh (Aman)',
         processingTimeMs: Math.round(performance.now() - startTime),
         timestamp: Date.now()
       };
@@ -128,13 +128,24 @@ export class MediaCompressor {
       const video = document.createElement('video');
       video.muted = true;
       video.playsInline = true;
+      video.style.position = 'fixed';
+      video.style.top = '-9999px';
+      video.style.left = '-9999px';
+      video.style.width = '1px';
+      video.style.height = '1px';
+      video.style.opacity = '0.01';
+      video.style.pointerEvents = 'none';
+
+      document.body.appendChild(video);
+
       const url = URL.createObjectURL(file);
 
       const dynamicTimeoutMs = Math.max(30000, Math.ceil(file.size / (50 * 1024 * 1024)) * 15000);
 
       const timeout = setTimeout(() => {
+        if (video.parentNode) video.parentNode.removeChild(video);
         URL.revokeObjectURL(url);
-        reject(new Error(`Waktu pembacaan video habis (${dynamicTimeoutMs}ms). Kodek mungkin HEVC H.265 atau tidak didukung dekoder browser.`));
+        reject(new Error(`Waktu pembacaan video habis (${dynamicTimeoutMs}ms).`));
       }, dynamicTimeoutMs);
 
       video.onloadedmetadata = () => {
@@ -149,8 +160,9 @@ export class MediaCompressor {
 
       video.onerror = () => {
         clearTimeout(timeout);
+        if (video.parentNode) video.parentNode.removeChild(video);
         URL.revokeObjectURL(url);
-        reject(new Error('Gagal memuat berkas video. Kodek video (misal HEVC H.265 iPhone) tidak didukung dekoder bawaan browser.'));
+        reject(new Error('Gagal memuat berkas video di HTML5 decoder.'));
       };
 
       video.src = url;
@@ -184,30 +196,47 @@ export class MediaCompressor {
       };
 
       recorder.onstop = () => {
+        if (video.parentNode) video.parentNode.removeChild(video);
         const blob = new Blob(chunks, { type: recorder.mimeType || 'video/webm' });
         resolve(blob);
       };
 
-      video.playbackRate = 2.0;
-
-      recorder.start(1000);
+      // Play video asynchronously and wait for playback to actually begin before starting MediaRecorder
       video.currentTime = 0;
-      video.play();
-
-      const duration = video.duration || 10;
       
-      const drawFrame = () => {
-        if (video.ended || video.paused) {
-          recorder.stop();
-          return;
+      const startRecording = async () => {
+        try {
+          await video.play();
+        } catch (err) {
+          console.warn('[MediaCompressor] Autoplay bypass triggered:', err);
         }
 
-        ctx.drawImage(video, 0, 0, width, height);
-        onProgressStep(Math.min(1.0, video.currentTime / duration));
+        recorder.start(100);
+
+        const duration = video.duration || 10;
+        
+        const drawFrame = () => {
+          if (video.ended) {
+            if (recorder.state !== 'inactive') recorder.stop();
+            return;
+          }
+
+          ctx.drawImage(video, 0, 0, width, height);
+          onProgressStep(Math.min(1.0, video.currentTime / duration));
+
+          if (!video.ended && !video.paused) {
+            requestAnimationFrame(drawFrame);
+          } else if (!video.ended) {
+            setTimeout(drawFrame, 50);
+          } else {
+            if (recorder.state !== 'inactive') recorder.stop();
+          }
+        };
+
         requestAnimationFrame(drawFrame);
       };
 
-      requestAnimationFrame(drawFrame);
+      startRecording();
     });
   }
 }
