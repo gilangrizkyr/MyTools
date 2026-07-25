@@ -1,0 +1,42 @@
+name: Publish gilang-storage-sdk to npm
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    name: Publish to npm (OIDC Provenance)
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write   # Required for OIDC Trusted Publisher
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        working-directory: ./gilang-storage-sdk
+        run: npm install
+
+      - name: Bump version from release tag
+        working-directory: ./gilang-storage-sdk
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          VERSION="${TAG#v}"
+          echo "Publishing version: $VERSION"
+          npm version "$VERSION" --no-git-tag-version
+
+      - name: Publish to npm with provenance
+        working-directory: ./gilang-storage-sdk
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
