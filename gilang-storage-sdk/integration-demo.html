@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Live Integration Demo - UnaraStorageSDK Master Engine</title>
+  <title>Live Integration Demo - GilangStorageSDK Master Engine</title>
   <link rel="stylesheet" href="./src/style.css">
 </head>
 <body>
@@ -13,7 +13,7 @@
       <a href="../index.html" class="logo-group">
         <div class="logo-icon"><i data-lucide="layers"></i></div>
         <div>
-          <h1 class="logo-title">Unara Storage SDK</h1>
+          <h1 class="logo-title">Gilang Storage SDK</h1>
           <span class="badge-tag">Live Demo SDK</span>
         </div>
       </a>
@@ -27,21 +27,21 @@
 
   <main class="app-container" style="max-width: 800px;">
     <div class="card">
-      <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 1rem;">Simulasi Integrasi Master Unara Storage Client SDK</h2>
+      <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 1rem;">Simulasi Integrasi Master GilangStorageSDK</h2>
       <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
-        Pilih file jenis apa saja. <code>UnaraStorageSDK</code> akan memproses seluruh alur (Verifikasi Keamanan ➔ Kompresi Smart ➔ Pembuatan WebP Thumbnail) dalam 1 alur otomatis.
+        Pilih file jenis apa saja. <code>GilangStorageSDK</code> akan memproses seluruh alur (Verifikasi Keamanan ➔ Kompresi Smart ➔ Pembuatan WebP Thumbnail) dalam 1 alur otomatis.
       </p>
 
       <form id="demoForm">
         <div style="margin-bottom: 1.5rem;">
-          <label style="display: block; font-weight: 700; margin-bottom: 0.5rem;">Unggah Berkas Baru ke Unara Storage</label>
+          <label style="display: block; font-weight: 700; margin-bottom: 0.5rem;">Unggah Berkas Baru</label>
           <input type="file" id="demoInput" style="width: 100%; padding: 0.75rem; border: 1px solid var(--card-border); border-radius: 8px;">
         </div>
 
         <div id="demoStatus" class="hidden" style="background: var(--ocean-light); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem;">
           <img id="demoImg" src="" alt="Preview" style="width: 64px; height: 64px; border-radius: 8px; object-fit: cover;">
           <div>
-            <strong id="statusTitle" style="color: var(--ocean-primary);">Menjalankan Unara Pipeline Engine...</strong>
+            <strong id="statusTitle" style="color: var(--ocean-primary);">Menjalankan Gilang Storage Engine...</strong>
             <div id="statusDetail" style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.25rem;"></div>
           </div>
         </div>
@@ -55,7 +55,7 @@
 
   <script type="module">
     import { createIcons, icons } from 'lucide';
-    import { UnaraStorageSDK } from './src/UnaraStorageSDK.js';
+    import { GilangStorageSDK } from './src/GilangStorageSDK.js';
 
     createIcons({ icons });
 
@@ -65,16 +65,16 @@
     const statusDetail = document.getElementById('statusDetail');
     const demoImg = document.getElementById('demoImg');
 
-    UnaraStorageSDK.attachToInput('#demoInput', {
+    GilangStorageSDK.attachToInput('#demoInput', {
       onStart: (files) => {
         demoStatus.classList.remove('hidden');
-        statusTitle.textContent = 'Menjalankan Master Unara Pipeline...';
+        statusTitle.textContent = 'Menjalankan Master Gilang Pipeline...';
         statusDetail.textContent = `Memproses ${files[0].name}...`;
       },
       onSuccess: (results) => {
         const r = results[0];
         if (r.thumbnailFile) demoImg.src = URL.createObjectURL(r.thumbnailFile);
-        statusTitle.textContent = 'Unara Storage Payload Siap 100%!';
+        statusTitle.textContent = 'Gilang Storage Payload Siap 100%!';
         statusDetail.textContent = `Biner: ${r.securityMeta.hexSignature} | Ukuran Awal: ${(r.compressionMeta.originalSize / 1024 / 1024).toFixed(2)} MB ➔ Ukuran Kompresi: ${(r.compressionMeta.compressedSize / 1024 / 1024).toFixed(2)} MB (Waktu Total: ${r.totalTimeMs} ms)`;
       }
     });

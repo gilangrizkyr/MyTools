@@ -1,0 +1,47 @@
+{
+  "name": "gilang-storage-sdk",
+  "version": "1.0.0",
+  "description": "Master Client SDK for Gilang Storage Ecosystem: Security Guard, Smart Multi-Format Compression (< 2 MB), and Instant WebP Thumbnail Generation (< 15 KB)",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "type": "module",
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "src/",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gilangrizkyr/MyTools.git"
+  },
+  "keywords": [
+    "gilang-storage",
+    "storage-sdk",
+    "file-compressor",
+    "image-optimizer",
+    "pdf-optimizer",
+    "video-compressor",
+    "office-optimizer",
+    "webp-thumbnail",
+    "exif-remover",
+    "security-guard"
+  ],
+  "author": "Gilang",
+  "license": "Proprietary",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "browser-image-optimizer-sdk": "^1.0.0",
+    "jszip": "^3.10.1",
+    "lucide": "^0.344.0",
+    "pdfjs-dist": "^3.11.174"
+  },
+  "devDependencies": {
+    "vite": "^5.1.4"
+  }
+}

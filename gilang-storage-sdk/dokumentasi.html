@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dokumentasi UnaraStorageSDK - Master Client SDK Unara Storage</title>
+  <title>Dokumentasi GilangStorageSDK - Master Client SDK</title>
   <link rel="stylesheet" href="./src/style.css">
   <style>
     pre { background: #0f172a; color: #f8fafc; padding: 1.25rem; border-radius: 12px; overflow-x: auto; font-family: monospace; font-size: 0.9rem; margin: 1rem 0; }
@@ -17,7 +17,7 @@
       <a href="../index.html" class="logo-group">
         <div class="logo-icon"><i data-lucide="layers"></i></div>
         <div>
-          <h1 class="logo-title">Unara Storage SDK</h1>
+          <h1 class="logo-title">Gilang Storage SDK</h1>
           <span class="badge-tag">Dokumentasi SDK</span>
         </div>
       </a>
@@ -30,31 +30,36 @@
   </header>
 
   <main class="app-container" style="max-width: 900px;">
-    <h2 style="font-size: 2rem; font-weight: 800; margin-bottom: 1rem;">Dokumentasi Master UnaraStorageSDK</h2>
+    <h2 style="font-size: 2rem; font-weight: 800; margin-bottom: 1rem;">Dokumentasi Master GilangStorageSDK</h2>
     <p style="color: var(--text-muted); margin-bottom: 2rem;">
-      Satu-satunya SDK master yang Anda butuhkan untuk menghubungkan website klien mana pun ke server penyimpanan Unara Storage.
+      Satu-satunya SDK master yang Anda butuhkan untuk menghubungkan website klien mana pun ke server penyimpanan Gilang Storage.
     </p>
 
     <div class="card" style="margin-bottom: 2rem;">
-      <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 1rem;">1. Integrasi 1 Baris Kode Input Interceptor</h3>
-      <pre><code>import { UnaraStorageSDK } from './src/UnaraStorageSDK.js';
+      <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 1rem;">1. Instalasi Resmi via NPM</h3>
+      <pre><code>npm install gilang-storage-sdk</code></pre>
+    </div>
 
-UnaraStorageSDK.attachToInput('#fileUpload', {
-  apiEndpoint: 'https://unara-storage.com/api/upload',
+    <div class="card" style="margin-bottom: 2rem;">
+      <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 1rem;">2. Integrasi 1 Baris Kode Input Interceptor</h3>
+      <pre><code>import { GilangStorageSDK } from 'gilang-storage-sdk';
+
+GilangStorageSDK.attachToInput('#fileUpload', {
+  apiEndpoint: 'https://storage-api.com/api/upload',
   onSuccess: (results) => {
-    console.log('File ter-sanitasi, terkompresi & ter-upload ke Unara Storage:', results[0]);
+    console.log('File ter-sanitasi, terkompresi & ter-upload:', results[0]);
   }
 });</code></pre>
     </div>
 
     <div class="card">
-      <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 1rem;">2. Panggilan Programatis Manual</h3>
-      <pre><code>import { UnaraStorageSDK } from './src/UnaraStorageSDK.js';
+      <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 1rem;">3. Panggilan Programatis Manual</h3>
+      <pre><code>import { GilangStorageSDK } from 'gilang-storage-sdk';
 
 const userFile = event.target.files[0];
 
 // Otomatis: Security Check ➔ Smart Compress (&lt; 2 MB) ➔ WebP Thumbnail (&lt; 15 KB)
-const result = await UnaraStorageSDK.process(userFile);
+const result = await GilangStorageSDK.process(userFile);
 
 console.log('File Siap Upload:', result.processedFile);
 console.log('Thumbnail Mini:', result.thumbnailFile);</code></pre>

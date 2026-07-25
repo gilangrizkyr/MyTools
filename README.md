@@ -84,14 +84,14 @@ Client-side thumbnail and preview generator engine and SDK (`ThumbnailSDK`) desi
 
 #### Key Capabilities
 - **Multi-Format Preview Snapshots**: Instantly generates WebP previews for Images (JPG, PNG), Videos (frame capture at 1.0s), and PDF Documents (Page 1 snapshot).
-- **100x Dashboard Acceleration**: Produces 150x150 px WebP preview blobs (< 15 KB) allowing Unara Storage file list views to render instantaneously without downloading full multi-megabyte files.
+- **100x Dashboard Acceleration**: Produces 150x150 px WebP preview blobs (< 15 KB) allowing storage file list views to render instantaneously without downloading full multi-megabyte files.
 - **Website SDK (`ThumbnailSDK`)**: Intercepts HTML `<input type="file">` elements to generate thumbnails prior to server submission.
 
 ---
 
 ### 6. file-security-guard
 
-Client-side file security verification, EXIF location metadata stripper, and SVG XSS sanitizer SDK (`SecurityGuardSDK`) built for Unara Storage.
+Client-side file security verification, EXIF location metadata stripper, and SVG XSS sanitizer SDK (`SecurityGuardSDK`).
 
 - **Status**: Production Ready
 - **Location**: [`file-security-guard/`](file:///home/Gilang/tools/file-security-guard)
@@ -105,18 +105,20 @@ Client-side file security verification, EXIF location metadata stripper, and SVG
 
 ---
 
-### 7. unara-storage-sdk (Master Unara Storage SDK)
+### 7. gilang-storage-sdk (Master Storage Client SDK)
 
-Unified Master Client SDK bundling Security Guard, Multi-Format Smart Compression (< 2 MB), and WebP Thumbnail Generation (< 15 KB) into a single 1-line integration module for Unara Storage.
+Official All-in-One Master Client SDK published on NPM (`npm i gilang-storage-sdk`) bundling Security Guard, Multi-Format Smart Compression (< 2 MB), and WebP Thumbnail Generation (< 15 KB) into a single 1-line integration module.
 
-- **Status**: Production Ready
-- **Location**: [`unara-storage-sdk/`](file:///home/Gilang/tools/unara-storage-sdk)
-- **Tech Stack**: Vanilla JavaScript (ES Modules), JSZip, PDF.js, Vite
-- **Documentation**: [SDK Integration Guide](file:///home/Gilang/tools/unara-storage-sdk/dokumentasi.html) | [Live Integration Demo](file:///home/Gilang/tools/unara-storage-sdk/integration-demo.html)
+- **Status**: Production Ready & Published to NPM
+- **Location**: [`gilang-storage-sdk/`](file:///home/Gilang/tools/gilang-storage-sdk)
+- **Official NPM Package**: [`gilang-storage-sdk`](https://www.npmjs.com/package/gilang-storage-sdk) (`npm i gilang-storage-sdk`)
+- **Tech Stack**: Vanilla JavaScript (ES Modules), TypeScript Declarations (`index.d.ts`), JSZip, PDF.js, Vite
+- **Live Web App**: [Launch Gilang Storage SDK](https://gilangrizkyr.github.io/MyTools/gilang-storage-sdk/index.html)
+- **Documentation**: [SDK Integration Guide](file:///home/Gilang/tools/gilang-storage-sdk/dokumentasi.html) | [Live Integration Demo](file:///home/Gilang/tools/gilang-storage-sdk/integration-demo.html)
 
 #### Key Capabilities
-- **1-Line Master Integration**: Single call `UnaraStorageSDK.process(file)` or `UnaraStorageSDK.attachToInput('#upload')`.
-- **All-in-One Pipeline**: Runs Security Guard (Magic Bytes + EXIF GPS Cleaner) $\rightarrow$ Smart Compressor (< 2 MB) $\rightarrow$ WebP Thumbnail Engine (< 15 KB) $\rightarrow$ Unara Storage Server Upload.
+- **1-Line Master Integration**: Single call `GilangStorageSDK.process(file)` or `GilangStorageSDK.attachToInput('#upload')`.
+- **All-in-One Pipeline**: Runs Security Guard (Magic Bytes + EXIF GPS Cleaner) $\rightarrow$ Smart Compressor (< 2 MB) $\rightarrow$ WebP Thumbnail Engine (< 15 KB) $\rightarrow$ Server Upload.
 
 ---
 
@@ -128,31 +130,12 @@ tools/
 ├── README.md                      # Repository Index & Documentation
 ├── index.html                     # Central Dashboard Landing Page
 ├── image-optimizer/               # Tool #1: Image Optimization Tool, SDK & NPM Package
-│   ├── LICENSE                    # Tool License
-│   ├── README.md                  # Tool Documentation & NPM Guide
-│   ├── index.js                   # NPM Package Main Entry Point
-│   ├── index.d.ts                 # TypeScript Declaration File
-│   ├── index.html                 # Application Interface
-│   ├── integration-demo.html      # Integration Demo Page
-│   ├── dokumentasi.html           # Technical SDK Documentation
-│   ├── package.json               # NPM Package Manifest (`browser-image-optimizer-sdk`)
-│   ├── vite.config.js             # Vite Configuration
-│   └── src/
-│       ├── style.css              # Stylesheet
-│       ├── main.js                # UI Logic
-│       ├── sdk/
-│       │   └── FileOptimizerSDK.js # Auto-compress SDK
-│       ├── core/
-│       │   ├── ImageCompressor.js # High-Fidelity compression engine
-│       │   └── BatchProcessor.js  # Batch queue manager
-│       └── utils/
-│           └── formatters.js      # Utility functions
 ├── pdf-optimizer/                 # Tool #2: PDF & Document Smart Optimizer
 ├── media-optimizer/               # Tool #3: Client-Side Video & Media Compressor
 ├── doc-excel-optimizer/           # Tool #4: Office Document & Spreadsheet Optimizer
 ├── thumbnail-generator/           # Tool #5: Smart WebP Thumbnail Generator
 ├── file-security-guard/           # Tool #6: File Security & EXIF GPS Cleaner
-└── unara-storage-sdk/             # Tool #7: Master Unara Storage Client SDK
+└── gilang-storage-sdk/            # Tool #7: Master Storage SDK (`gilang-storage-sdk`)
 ```
 
 ---

@@ -1,9 +1,9 @@
 import { createIcons, icons } from 'lucide';
-import { UnaraStorageSDK } from './UnaraStorageSDK.js';
+import { GilangStorageSDK } from './GilangStorageSDK.js';
 import { formatBytes } from './utils/formatters.js';
 
 let selectedFile = null;
-let unaraResult = null;
+let gilangResult = null;
 
 document.addEventListener('DOMContentLoaded', () => {
   createIcons({ icons });
@@ -40,10 +40,10 @@ function setupEvents() {
 
   if (downloadBtn) {
     downloadBtn.addEventListener('click', () => {
-      if (!unaraResult) return;
+      if (!gilangResult) return;
       const a = document.createElement('a');
-      a.href = URL.createObjectURL(unaraResult.processedFile);
-      a.download = `unara-${unaraResult.fileName}`;
+      a.href = URL.createObjectURL(gilangResult.processedFile);
+      a.download = `gilang-storage-${gilangResult.fileName}`;
       a.click();
     });
   }
@@ -60,7 +60,7 @@ async function processFile(file) {
   previewCard.classList.add('hidden');
 
   try {
-    unaraResult = await UnaraStorageSDK.process(file, {
+    gilangResult = await GilangStorageSDK.process(file, {
       onProgress: (percent, statusText) => {
         progressBar.style.width = `${percent}%`;
         progressText.textContent = `${statusText} (${percent}%)`;
@@ -70,19 +70,19 @@ async function processFile(file) {
     progressCard.classList.add('hidden');
     previewCard.classList.remove('hidden');
 
-    document.getElementById('fileName').textContent = unaraResult.fileName;
-    document.getElementById('origSize').textContent = formatBytes(unaraResult.compressionMeta.originalSize);
-    document.getElementById('compSize').textContent = formatBytes(unaraResult.compressionMeta.compressedSize);
-    document.getElementById('procTime').textContent = `${unaraResult.totalTimeMs} ms`;
-    document.getElementById('hexSig').textContent = unaraResult.securityMeta.hexSignature;
+    document.getElementById('fileName').textContent = gilangResult.fileName;
+    document.getElementById('origSize').textContent = formatBytes(gilangResult.compressionMeta.originalSize);
+    document.getElementById('compSize').textContent = formatBytes(gilangResult.compressionMeta.compressedSize);
+    document.getElementById('procTime').textContent = `${gilangResult.totalTimeMs} ms`;
+    document.getElementById('hexSig').textContent = gilangResult.securityMeta.hexSignature;
 
-    if (unaraResult.thumbnailFile) {
-      document.getElementById('thumbImg').src = URL.createObjectURL(unaraResult.thumbnailFile);
+    if (gilangResult.thumbnailFile) {
+      document.getElementById('thumbImg').src = URL.createObjectURL(gilangResult.thumbnailFile);
       document.getElementById('thumbCard').classList.remove('hidden');
     }
 
   } catch (err) {
     progressCard.classList.add('hidden');
-    alert('Proses Unara Storage Pipeline Gagal: ' + err.message);
+    alert('Proses Gilang Storage Pipeline Gagal: ' + err.message);
   }
 }

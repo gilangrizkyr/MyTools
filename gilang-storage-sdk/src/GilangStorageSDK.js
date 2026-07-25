@@ -5,21 +5,21 @@ import { DocCompressor } from '../../doc-excel-optimizer/src/core/DocCompressor.
 import { ThumbnailEngine } from '../../thumbnail-generator/src/core/ThumbnailEngine.js';
 
 /**
- * Master Unara Storage Client SDK
- * Unified 1-Line Master Integration for Unara Storage Server:
+ * Master Gilang Storage Client SDK
+ * Unified 1-Line Master Integration for Gilang Storage Ecosystem:
  * 1. Security & EXIF GPS Sanitizer
  * 2. High-Fidelity Smart File Compressor (< 2 MB)
  * 3. Instant WebP Thumbnail Generator (< 15 KB)
  */
-export class UnaraStorageSDK {
+export class GilangStorageSDK {
   /**
-   * Process any incoming file through the full Unara Storage Pipeline.
+   * Process any incoming file through the full Gilang Storage Pipeline.
    * 
    * @param {File} file - Original file from user input
    * @param {Object} [options]
-   * @param {string} [options.apiEndpoint] - Optional Unara Storage API URL (e.g. http://localhost:5000/api/upload)
+   * @param {string} [options.apiEndpoint] - Optional Storage API URL (e.g. http://localhost:5000/api/upload)
    * @param {function} [options.onProgress] - Progress reporting callback
-   * @returns {Promise<Object>} Unified Unara payload result
+   * @returns {Promise<Object>} Unified Gilang Storage payload result
    */
   static async process(file, options = {}) {
     const startTime = performance.now();
@@ -55,7 +55,7 @@ export class UnaraStorageSDK {
         compressionMeta = { originalSize: file.size, compressedSize: compressedFile.size, savingsPercent: res.savingsPercent };
       }
     } catch (err) {
-      console.warn('[UnaraStorageSDK] Compression fallback to original file:', err);
+      console.warn('[GilangStorageSDK] Compression fallback to original file:', err);
     }
 
     onProgress(75, 'Langkah 3/3: Membuat foto sampul thumbnail WebP (< 15 KB)...');
@@ -69,16 +69,16 @@ export class UnaraStorageSDK {
         thumbnailFile = new File([thumbRes.thumbnailBlob], `${baseName}-thumb.webp`, { type: 'image/webp' });
       }
     } catch (err) {
-      console.warn('[UnaraStorageSDK] Thumbnail generation skipped:', err);
+      console.warn('[GilangStorageSDK] Thumbnail generation skipped:', err);
     }
 
-    onProgress(95, 'Menyiapkan payload Unara Storage...');
+    onProgress(95, 'Menyiapkan payload Gilang Storage...');
 
     let uploadResponse = null;
 
     // 4. Optional Automatic Backend Upload
     if (apiEndpoint) {
-      onProgress(98, 'Mengunggah file & thumbnail ke server Unara Storage...');
+      onProgress(98, 'Mengunggah file & thumbnail ke server Storage...');
       const formData = new FormData();
       formData.append('file', compressedFile);
       if (thumbnailFile) formData.append('thumbnail', thumbnailFile);
@@ -88,7 +88,7 @@ export class UnaraStorageSDK {
     }
 
     const endTime = performance.now();
-    onProgress(100, 'Proses Unara Storage selesai sempurna!');
+    onProgress(100, 'Proses Gilang Storage Pipeline selesai sempurna!');
 
     return {
       fileName: file.name,
@@ -107,13 +107,13 @@ export class UnaraStorageSDK {
   }
 
   /**
-   * Auto-attach Unara Storage pipeline to an HTML <input type="file"> element.
+   * Auto-attach Gilang Storage pipeline to an HTML <input type="file"> element.
    */
   static attachToInput(target, options = {}) {
     const inputEl = typeof target === 'string' ? document.querySelector(target) : target;
 
     if (!inputEl || inputEl.tagName !== 'INPUT' || inputEl.type !== 'file') {
-      console.error('[UnaraStorageSDK] Target element must be an <input type="file">');
+      console.error('[GilangStorageSDK] Target element must be an <input type="file">');
       return null;
     }
 
@@ -130,12 +130,12 @@ export class UnaraStorageSDK {
       try {
         const results = [];
         for (const file of files) {
-          const res = await UnaraStorageSDK.process(file, options);
+          const res = await GilangStorageSDK.process(file, options);
           results.push(res);
         }
         onSuccess(results);
       } catch (err) {
-        console.error('[UnaraStorageSDK] Pipeline error:', err);
+        console.error('[GilangStorageSDK] Pipeline error:', err);
         onError(err);
       }
     };
@@ -149,5 +149,5 @@ export class UnaraStorageSDK {
 }
 
 if (typeof window !== 'undefined') {
-  window.UnaraStorageSDK = UnaraStorageSDK;
+  window.GilangStorageSDK = GilangStorageSDK;
 }
