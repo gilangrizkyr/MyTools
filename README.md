@@ -54,23 +54,6 @@ Client-side video and media optimization library and SDK built to compress large
 
 ---
 
-### 4. ocr-scanner
-
-Client-side Optical Character Recognition (OCR) scanner and integration SDK designed to extract structured metadata (Merchant Name, Date, Total Amount, Tax) from receipt and document images 100% locally in the browser, with instant export to Excel (CSV).
-
-- **Status**: Production Ready
-- **Location**: [`ocr-scanner/`](file:///home/Gilang/tools/ocr-scanner)
-- **Tech Stack**: Vanilla JavaScript (ES Modules), Tesseract.js, HTML5 Canvas, Vite
-- **Documentation**: [SDK Integration Guide](file:///home/Gilang/tools/ocr-scanner/dokumentasi.html) | [Live Integration Demo](file:///home/Gilang/tools/ocr-scanner/integration-demo.html)
-
-#### Key Capabilities
-- **100% Browser OCR Engine**: Runs Tesseract OCR locally in the browser, guaranteeing 100% data privacy and zero server API costs.
-- **Structured Metadata Extractor**: Parses raw text output to auto-detect Merchant Name, Date, Total Amount, and Tax.
-- **Website SDK (`ReceiptOcrSDK`)**: Intercepts receipt file uploads on external forms to automatically auto-fill form input fields.
-- **Excel Export**: Exports parsed receipt records into Excel-compatible CSV files.
-
----
-
 ## Directory Overview
 
 ```text
@@ -113,24 +96,7 @@ tools/
 │       │   └── PdfCompressor.js  # PDF stream compression engine
 │       └── utils/
 │           └── formatters.js      # Bytes formatters
-├── media-optimizer/               # Tool #3: Client-Side Video & Media Compressor
-│   ├── LICENSE                    # Tool License
-│   ├── index.html                 # Application Interface
-│   ├── integration-demo.html      # Integration Demo Page
-│   ├── dokumentasi.html           # Technical SDK Documentation
-│   ├── package.json               # Package Manifest
-│   ├── vite.config.js             # Vite Configuration
-│   ├── README.md                  # Tool Documentation
-│   └── src/
-│       ├── style.css              # Stylesheet
-│       ├── main.js                # UI Logic
-│       ├── sdk/
-│       │   └── MediaOptimizerSDK.js # Auto-compress Video SDK
-│       ├── core/
-│       │   └── MediaCompressor.js # Video stream compression engine
-│       └── utils/
-│           └── formatters.js      # Formatting utilities
-└── ocr-scanner/                   # Tool #4: Client-Side Receipt & Document OCR Extractor
+└── media-optimizer/               # Tool #3: Client-Side Video & Media Compressor
     ├── LICENSE                    # Tool License
     ├── index.html                 # Application Interface
     ├── integration-demo.html      # Integration Demo Page
@@ -142,11 +108,11 @@ tools/
         ├── style.css              # Stylesheet
         ├── main.js                # UI Logic
         ├── sdk/
-        │   └── ReceiptOcrSDK.js   # Auto-fill Receipt OCR SDK
+        │   └── MediaOptimizerSDK.js # Auto-compress Video SDK
         ├── core/
-        │   └── OcrEngine.js       # Tesseract OCR & regex parser
+        │   └── MediaCompressor.js # Video stream compression engine
         └── utils/
-            └── formatters.js      # Formatting & CSV export utilities
+            └── formatters.js      # Formatting utilities
 ```
 
 ---
