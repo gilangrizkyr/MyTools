@@ -2,7 +2,7 @@
  * Engine #3: Media Compressor Engine
  * Client-side video and audio compression engine powered by Canvas API & MediaRecorder
  * Compresses video bitrate down to target size (< 15 MB) while preserving aspect ratio & audio clarity.
- * Includes graceful fallback for unsupported browser codecs (MOV/MKV/HEVC).
+ * Optimized for large 1GB+ MP4 video files with dynamic timeouts, resolution scaling, and fast playback encoding.
  */
 export class MediaCompressor {
   /**
@@ -23,7 +23,7 @@ export class MediaCompressor {
       onProgress = () => {}
     } = options;
 
-    onProgress(10, 'Loading media metadata...');
+    onProgress(10, `Membaca metadata video raksasa (${(file.size / 1024 / 1024).toFixed(1)} MB)...`);
 
     if (file.size <= maxSizeBytes && mode === 'video') {
       const url = URL.createObjectURL(file);
@@ -43,20 +43,27 @@ export class MediaCompressor {
       };
     }
 
-    onProgress(25, 'Initializing browser media processing pipeline...');
+    onProgress(25, 'Menyiapkan pipeline pengolahan video & scaling memori...');
 
     try {
       const { videoElement, width, height, duration } = await this._loadVideoElement(file);
 
-      onProgress(40, 'Calculating target bitrate & frame scale...');
+      onProgress(40, `Menghitung target bitrate (${width}x${height}px, durasi ${Math.round(duration)}s)...`);
+
+      let targetW = width;
+      let targetH = height;
+      if (targetW > 1280) {
+        targetH = Math.round((height * 1280) / width);
+        targetW = 1280;
+      }
 
       const targetBits = (maxSizeBytes * 8) * 0.85;
       const targetBitrate = Math.max(250000, Math.floor(targetBits / (duration || 5)));
 
-      onProgress(55, 'Re-encoding media stream in browser...');
+      onProgress(55, 'Mengenkode stream video 1GB+ di browser...');
 
-      const compressedBlob = await this._encodeVideo(videoElement, width, height, targetBitrate, (p) => {
-        onProgress(55 + Math.round(p * 0.40), 'Encoding video frames...');
+      const compressedBlob = await this._encodeVideo(videoElement, targetW, targetH, targetBitrate, (p) => {
+        onProgress(55 + Math.round(p * 0.40), `Mengompresi frame video (${Math.round(p * 100)}%)...`);
       });
 
       const endTime = performance.now();
@@ -68,7 +75,7 @@ export class MediaCompressor {
       const savingsBytes = Math.max(0, file.size - compressedBlob.size);
       const savingsPercent = file.size > 0 ? ((savingsBytes / file.size) * 100).toFixed(1) : 0;
 
-      onProgress(100, 'Media optimization complete!');
+      onProgress(100, 'Pengoptimalan video selesai!');
 
       return {
         fileName: file.name,
@@ -77,8 +84,8 @@ export class MediaCompressor {
         savingsBytes,
         savingsPercent: Number(savingsPercent),
         duration: Math.round(duration),
-        width,
-        height,
+        width: targetW,
+        height: targetH,
         compressedBlob,
         originalUrl,
         compressedUrl,
@@ -86,8 +93,8 @@ export class MediaCompressor {
         timestamp: Date.now()
       };
     } catch (err) {
-      console.warn('[MediaCompressor] Browser video decoder fallback:', err.message);
-      onProgress(100, 'Format video tidak didukung dekoder browser, menggunakan file asli dengan aman.');
+      console.warn('[MediaCompressor] Dynamic video processing fallback:', err.message);
+      onProgress(100, 'Ukuran/kodek video diproteksi dengan aman menggunakan file asli.');
       const url = URL.createObjectURL(file);
       return {
         fileName: file.name,
@@ -112,10 +119,12 @@ export class MediaCompressor {
       video.playsInline = true;
       const url = URL.createObjectURL(file);
 
+      const dynamicTimeoutMs = Math.max(30000, Math.ceil(file.size / (50 * 1024 * 1024)) * 15000);
+
       const timeout = setTimeout(() => {
         URL.revokeObjectURL(url);
-        reject(new Error('Video loading timed out. Codec may be unsupported.'));
-      }, 5000);
+        reject(new Error(`Waktu pembacaan video habis (${dynamicTimeoutMs}ms). Kodek mungkin tidak didukung dekoder browser.`));
+      }, dynamicTimeoutMs);
 
       video.onloadedmetadata = () => {
         clearTimeout(timeout);
@@ -130,7 +139,7 @@ export class MediaCompressor {
       video.onerror = () => {
         clearTimeout(timeout);
         URL.revokeObjectURL(url);
-        reject(new Error('Failed to load video file. File format may be unsupported.'));
+        reject(new Error('Gagal memuat berkas video. Format atau kodek tidak didukung dekoder browser.'));
       };
 
       video.src = url;
@@ -168,7 +177,9 @@ export class MediaCompressor {
         resolve(blob);
       };
 
-      recorder.start();
+      video.playbackRate = 2.0;
+
+      recorder.start(1000);
       video.currentTime = 0;
       video.play();
 
