@@ -1,6 +1,6 @@
 {
   "name": "gilang-storage-sdk",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Master Client SDK for Gilang Storage Ecosystem: Security Guard, Smart Multi-Format Compression (< 2 MB), and Instant WebP Thumbnail Generation (< 15 KB)",
   "main": "index.js",
   "types": "index.d.ts",

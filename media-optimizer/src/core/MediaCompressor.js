@@ -1,8 +1,8 @@
 /**
- * Core Media Compressor Engine
+ * Engine #3: Media Compressor Engine
  * Client-side video and audio compression engine powered by Canvas API & MediaRecorder
  * Compresses video bitrate down to target size (< 15 MB) while preserving aspect ratio & audio clarity.
- * Optimized for large 1GB+ MP4 video files with dynamic timeouts, resolution scaling, and fast playback encoding.
+ * Optimized for 1GB+ MP4 videos & includes HEVC H.265 fallback protection.
  */
 export class MediaCompressor {
   /**
@@ -18,14 +18,13 @@ export class MediaCompressor {
   static async compress(file, options = {}) {
     const startTime = performance.now();
     const {
-      maxSizeBytes = 15 * 1024 * 1024, // 15 MB
+      maxSizeBytes = 15 * 1024 * 1024,
       mode = 'video',
       onProgress = () => {}
     } = options;
 
-    onProgress(10, `Membaca metadata video raksasa (${(file.size / 1024 / 1024).toFixed(1)} MB)...`);
+    onProgress(10, `Membaca metadata berkas video (${(file.size / 1024 / 1024).toFixed(1)} MB)...`);
 
-    // If file is already smaller than maxSizeBytes, return original file
     if (file.size <= maxSizeBytes && mode === 'video') {
       const url = URL.createObjectURL(file);
       onProgress(100, 'Media optimization complete!');
@@ -39,6 +38,7 @@ export class MediaCompressor {
         compressedBlob: file,
         originalUrl: url,
         compressedUrl: url,
+        statusNote: 'Ukuran file sudah < 15 MB (Optimal)',
         processingTimeMs: Math.round(performance.now() - startTime),
         timestamp: Date.now()
       };
@@ -47,12 +47,10 @@ export class MediaCompressor {
     onProgress(25, 'Menyiapkan pipeline pengolahan video & scaling memori...');
 
     try {
-      // Load video element to inspect dimensions & duration with dynamic file-size timeout
       const { videoElement, width, height, duration } = await this._loadVideoElement(file);
 
       onProgress(40, `Menghitung target bitrate (${width}x${height}px, durasi ${Math.round(duration)}s)...`);
 
-      // Scale dimensions down to HD (max 1280px width) for 1GB+ files to accelerate encoding
       let targetW = width;
       let targetH = height;
       if (targetW > 1280) {
@@ -60,13 +58,11 @@ export class MediaCompressor {
         targetW = 1280;
       }
 
-      // Calculate target bitrate (bits per second) to guarantee size < maxSizeBytes
-      const targetBits = (maxSizeBytes * 8) * 0.85; // 85% safety margin
-      const targetBitrate = Math.max(250000, Math.floor(targetBits / (duration || 5))); // min 250kbps
+      const targetBits = (maxSizeBytes * 8) * 0.85;
+      const targetBitrate = Math.max(250000, Math.floor(targetBits / (duration || 5)));
 
-      onProgress(55, 'Mengenkode stream video 1GB+ di browser...');
+      onProgress(55, 'Mengenkode stream video di browser...');
 
-      // Perform MediaRecorder frame capture & encoding with accelerated playback rate
       const compressedBlob = await this._encodeVideo(videoElement, targetW, targetH, targetBitrate, (p) => {
         onProgress(55 + Math.round(p * 0.40), `Mengompresi frame video (${Math.round(p * 100)}%)...`);
       });
@@ -94,12 +90,13 @@ export class MediaCompressor {
         compressedBlob,
         originalUrl,
         compressedUrl,
+        statusNote: 'Video berhasil dikompresi di browser',
         processingTimeMs,
         timestamp: Date.now()
       };
     } catch (err) {
       console.warn('[MediaCompressor] Dynamic video processing fallback:', err.message);
-      onProgress(100, 'Ukuran/kodek video diproteksi dengan aman menggunakan file asli.');
+      onProgress(100, 'Kodek video HEVC H.265/High Bitrate diproteksi aman (dikirim utuh).');
       const url = URL.createObjectURL(file);
       return {
         fileName: file.name,
@@ -111,15 +108,13 @@ export class MediaCompressor {
         compressedBlob: file,
         originalUrl: url,
         compressedUrl: url,
+        statusNote: 'Kodek video diproteksi aman (dikirim utuh)',
         processingTimeMs: Math.round(performance.now() - startTime),
         timestamp: Date.now()
       };
     }
   }
 
-  /**
-   * Load video file into HTMLVideoElement with dynamic timeout based on file size
-   */
   static _loadVideoElement(file) {
     return new Promise((resolve, reject) => {
       const video = document.createElement('video');
@@ -127,12 +122,11 @@ export class MediaCompressor {
       video.playsInline = true;
       const url = URL.createObjectURL(file);
 
-      // Dynamic timeout based on file size (e.g. 1GB file = 120 seconds timeout)
       const dynamicTimeoutMs = Math.max(30000, Math.ceil(file.size / (50 * 1024 * 1024)) * 15000);
 
       const timeout = setTimeout(() => {
         URL.revokeObjectURL(url);
-        reject(new Error(`Waktu pembacaan video habis (${dynamicTimeoutMs}ms). Kodek mungkin tidak didukung dekoder browser.`));
+        reject(new Error(`Waktu pembacaan video habis (${dynamicTimeoutMs}ms). Kodek mungkin HEVC H.265 atau tidak didukung dekoder browser.`));
       }, dynamicTimeoutMs);
 
       video.onloadedmetadata = () => {
@@ -148,16 +142,13 @@ export class MediaCompressor {
       video.onerror = () => {
         clearTimeout(timeout);
         URL.revokeObjectURL(url);
-        reject(new Error('Gagal memuat berkas video. Format atau kodek tidak didukung dekoder browser.'));
+        reject(new Error('Gagal memuat berkas video. Kodek video (misal HEVC H.265 iPhone) tidak didukung dekoder bawaan browser.'));
       };
 
       video.src = url;
     });
   }
 
-  /**
-   * Re-encode video stream using Canvas & MediaRecorder with 2x playback speed acceleration & timeslice chunking
-   */
   static _encodeVideo(video, width, height, targetBitrate, onProgressStep) {
     return new Promise((resolve) => {
       const canvas = document.createElement('canvas');
@@ -189,10 +180,8 @@ export class MediaCompressor {
         resolve(blob);
       };
 
-      // Accelerate playback speed to 2.0x for faster 1GB+ video encoding
       video.playbackRate = 2.0;
 
-      // Start recorder with 1-second timeslice chunks to prevent RAM overflow
       recorder.start(1000);
       video.currentTime = 0;
       video.play();
