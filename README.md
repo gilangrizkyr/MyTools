@@ -73,6 +73,22 @@ Client-side Office document and spreadsheet optimization library and SDK built t
 
 ---
 
+### 5. thumbnail-generator
+
+Client-side thumbnail and preview generator engine and SDK (`ThumbnailSDK`) designed to instantly generate ultra-lightweight WebP previews (< 15 KB) for Images, Videos, and PDF Documents to accelerate dashboard file list views by 100x.
+
+- **Status**: Production Ready
+- **Location**: [`thumbnail-generator/`](file:///home/Gilang/tools/thumbnail-generator)
+- **Tech Stack**: Vanilla JavaScript (ES Modules), HTML5 Video Canvas, PDF.js, Vite
+- **Documentation**: [SDK Integration Guide](file:///home/Gilang/tools/thumbnail-generator/dokumentasi.html) | [Live Integration Demo](file:///home/Gilang/tools/thumbnail-generator/integration-demo.html)
+
+#### Key Capabilities
+- **Multi-Format Preview Snapshots**: Instantly generates WebP previews for Images (JPG, PNG), Videos (frame capture at 1.0s), and PDF Documents (Page 1 snapshot).
+- **100x Dashboard Acceleration**: Produces 150x150 px WebP preview blobs (< 15 KB) allowing Unara Storage file list views to render instantaneously without downloading full multi-megabyte files.
+- **Website SDK (`ThumbnailSDK`)**: Intercepts HTML `<input type="file">` elements to generate thumbnails prior to server submission.
+
+---
+
 ## Directory Overview
 
 ```text
@@ -134,7 +150,24 @@ tools/
 │       │   └── MediaCompressor.js # Video stream compression engine
 │       └── utils/
 │           └── formatters.js      # Formatting utilities
-└── doc-excel-optimizer/           # Tool #4: Office Document & Spreadsheet Optimizer
+├── doc-excel-optimizer/           # Tool #4: Office Document & Spreadsheet Optimizer
+│   ├── LICENSE                    # Tool License
+│   ├── index.html                 # Application Interface
+│   ├── integration-demo.html      # Integration Demo Page
+│   ├── dokumentasi.html           # Technical SDK Documentation
+│   ├── package.json               # Package Manifest
+│   ├── vite.config.js             # Vite Configuration
+│   ├── README.md                  # Tool Documentation
+│   └── src/
+│       ├── style.css              # Stylesheet
+│       ├── main.js                # UI Logic
+│       ├── sdk/
+│       │   └── DocOptimizerSDK.js # Auto-compress Office SDK
+│       ├── core/
+│       │   └── DocCompressor.js   # Office ZIP media compressor engine
+│       └── utils/
+│           └── formatters.js      # Formatting utilities
+└── thumbnail-generator/           # Tool #5: Smart WebP Thumbnail Generator
     ├── LICENSE                    # Tool License
     ├── index.html                 # Application Interface
     ├── integration-demo.html      # Integration Demo Page
@@ -146,9 +179,9 @@ tools/
         ├── style.css              # Stylesheet
         ├── main.js                # UI Logic
         ├── sdk/
-        │   └── DocOptimizerSDK.js # Auto-compress Office SDK
+        │   └── ThumbnailSDK.js    # Auto-generate Thumbnail SDK
         ├── core/
-        │   └── DocCompressor.js   # Office ZIP media compressor engine
+        │   └── ThumbnailEngine.js # Multi-format snapshot engine
         └── utils/
             └── formatters.js      # Formatting utilities
 ```

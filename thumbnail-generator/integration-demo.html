@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Integration Demo - ThumbnailSDK</title>
+  <link rel="stylesheet" href="./src/style.css">
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="header-container">
+      <a href="../index.html" class="logo-group">
+        <div class="logo-icon"><i data-lucide="image"></i></div>
+        <div>
+          <h1 class="logo-title">Thumbnail Generator</h1>
+          <span class="badge-tag">Live Demo SDK</span>
+        </div>
+      </a>
+      <nav class="nav-links">
+        <a href="./index.html" class="nav-link">Web App</a>
+        <a href="./integration-demo.html" class="nav-link active">Live Demo SDK</a>
+        <a href="./dokumentasi.html" class="nav-link">Dokumentasi SDK</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="app-container" style="max-width: 800px;">
+    <div class="card">
+      <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 1rem;">Simulasi Pembuatan Preview Dashboard Unara Storage</h2>
+      <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+        Pilih Foto, Video, atau PDF. <code>ThumbnailSDK</code> akan membuatkan gambar sampul WebP mini (&lt; 15 KB) secara instan.
+      </p>
+
+      <form id="demoForm">
+        <div style="margin-bottom: 1.5rem;">
+          <label style="display: block; font-weight: 700; margin-bottom: 0.5rem;">Unggah Berkas Baru</label>
+          <input type="file" id="demoInput" accept="image/*,video/*,.pdf" style="width: 100%; padding: 0.75rem; border: 1px solid var(--card-border); border-radius: 8px;">
+        </div>
+
+        <div id="demoStatus" class="hidden" style="background: var(--ocean-light); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+          <img id="demoImg" src="" alt="Preview" style="width: 64px; height: 64px; border-radius: 8px; object-fit: cover;">
+          <div>
+            <strong id="statusTitle" style="color: var(--ocean-primary);">Membuat Preview WebP Mini...</strong>
+            <div id="statusDetail" style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.25rem;"></div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>Copyright &copy; 2026 Gilang. All Rights Reserved. &bull; Proprietary Software</p>
+  </footer>
+
+  <script type="module">
+    import { createIcons, icons } from 'lucide';
+    import { ThumbnailSDK } from './src/sdk/ThumbnailSDK.js';
+
+    createIcons({ icons });
+
+    const demoInput = document.getElementById('demoInput');
+    const demoStatus = document.getElementById('demoStatus');
+    const statusTitle = document.getElementById('statusTitle');
+    const statusDetail = document.getElementById('statusDetail');
+    const demoImg = document.getElementById('demoImg');
+
+    ThumbnailSDK.attachToInput('#demoInput', {
+      size: 150,
+      onStart: (files) => {
+        demoStatus.classList.remove('hidden');
+        statusTitle.textContent = 'Membuat Cuplikan WebP Mini...';
+        statusDetail.textContent = `Memproses ${files[0].name}...`;
+      },
+      onSuccess: (thumbnails) => {
+        const t = thumbnails[0];
+        demoImg.src = URL.createObjectURL(t);
+        statusTitle.textContent = 'Thumbnail Preview WebP Berhasil Dibuat!';
+        if (t.thumbnailMeta) {
+          statusDetail.textContent = `Ukuran Asli: ${(t.thumbnailMeta.originalSize / 1024 / 1024).toFixed(2)} MB ➔ Thumbnail Mini: ${(t.thumbnailMeta.thumbnailSize / 1024).toFixed(1)} KB (Waktu: ${t.thumbnailMeta.processingTimeMs} ms)`;
+        }
+      }
+    });
+  </script>
+</body>
+</html>
