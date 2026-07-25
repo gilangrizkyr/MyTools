@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dokumentasi Integrasi Website - ReceiptOcr SDK</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./src/style.css">
+  <style>
+    .doc-container { max-width: 1000px; margin: 0 auto; padding: 32px 20px; }
+    .doc-header, .doc-section { background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 32px; margin-bottom: 24px; box-shadow: var(--shadow-md); }
+    .doc-section h2 { font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin-bottom: 12px; }
+    .code-block { background: #0f172a; color: #38bdf8; padding: 20px; border-radius: 12px; font-family: monospace; font-size: 0.88rem; line-height: 1.6; overflow-x: auto; margin: 16px 0; }
+    .nav-links { display: flex; gap: 16px; margin-bottom: 20px; }
+    .nav-links a { color: var(--ocean-primary); font-weight: 700; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="doc-container">
+    <div class="nav-links">
+      <a href="/index.html">&larr; Beranda Tool Utama</a>
+      <span>&bull;</span>
+      <a href="/integration-demo.html">Coba Demo Live Integrasi &rarr;</a>
+    </div>
+
+    <header class="doc-header">
+      <h1 style="font-size: 2rem; font-weight: 800; color: #0f172a;">
+        Dokumentasi Integrasi ReceiptOcr SDK
+      </h1>
+      <p style="margin-top: 8px; color: #475569;">
+        Panduan integrasi modul OCR struk & nota pembayaran otomatis ke website Anda. Setiap kali pengguna mengunggah foto struk/nota, SDK akan membaca teks secara <strong>100% Client-Side</strong> dan mengisi kolom form (Nama Toko, Tanggal, Total Biaya) secara otomatis.
+      </p>
+    </header>
+
+    <section class="doc-section">
+      <h2>1. Keuntungan Integrasi Client-Side OCR SDK</h2>
+      <ul style="margin-left: 20px; color: #475569; line-height: 1.8;">
+        <li><strong>Bebas Biaya API Server:</strong> Pemrosesan OCR berjalan 100% di browser pengguna tanpa langganan Google Vision/AWS Textract.</li>
+        <li><strong>Otomatisasi Form Reimbursement:</strong> Pengguna tidak perlu lagi memasukkan nominal dan nama toko secara manual.</li>
+        <li><strong>Garansi Privasi Data Keuangan:</strong> Foto struk tidak pernah di-upload ke server luar.</li>
+      </ul>
+    </section>
+
+    <section class="doc-section">
+      <h2>2. Metode A: Auto-Attach pada Form Reimbursement Website</h2>
+      <div class="code-block">
+import { ReceiptOcrSDK } from './src/sdk/ReceiptOcrSDK.js';
+
+// Hubungkan ke input foto struk & petakan ke elemen input form
+ReceiptOcrSDK.attachToForm('#receiptInput', {
+  merchantInput: '#storeNameInput',
+  dateInput: '#transactionDateInput',
+  amountInput: '#totalAmountInput'
+}, {
+  onSuccess: (data) => {
+    console.log('Ekstraksi OCR Berhasil:', data);
+  }
+});
+      </div>
+    </section>
+
+    <section class="doc-section">
+      <h2>3. Metode B: Ekstraksi Data Manual via API Function</h2>
+      <div class="code-block">
+import { ReceiptOcrSDK } from './src/sdk/ReceiptOcrSDK.js';
+
+const imageFile = document.getElementById('myInput').files[0];
+
+const metadata = await ReceiptOcrSDK.extract(imageFile);
+
+console.log('Merchant:', metadata.merchant);
+console.log('Tanggal:', metadata.date);
+console.log('Total Biaya:', metadata.totalAmount);
+      </div>
+    </section>
+  </div>
+</body>
+</html>

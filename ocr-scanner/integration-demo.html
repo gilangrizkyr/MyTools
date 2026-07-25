@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Website Integration Demo - ReceiptOcr SDK (Auto-Fill Reimbursement Form)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./src/style.css">
+  <style>
+    .demo-container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+    .demo-card { background: #ffffff; border-radius: 16px; padding: 32px; box-shadow: 0 10px 30px rgba(2, 132, 199, 0.08); border: 1px solid #e2e8f0; margin-bottom: 24px; }
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; font-weight: 700; font-size: 0.88rem; margin-bottom: 6px; color: #0f172a; }
+    .form-control { width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: inherit; font-size: 0.9rem; }
+    .log-box { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 12px; padding: 16px; min-height: 120px; font-family: monospace; font-size: 0.85rem; color: #334155; line-height: 1.6; }
+    .status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; }
+    .status-badge.waiting { background: #e2e8f0; color: #475569; }
+    .status-badge.scanning { background: #e0f2fe; color: #0284c7; }
+    .status-badge.done { background: #dcfce7; color: #166534; }
+  </style>
+</head>
+<body>
+  <div class="demo-container">
+    <header style="margin-bottom: 30px;">
+      <a href="/index.html" style="color: #0284c7; font-weight: 700; text-decoration: none;">&larr; Kembali ke Tool OCR Utama</a>
+      <h1 style="font-size: 1.8rem; font-weight: 800; margin-top: 10px; color: #0f172a;">
+        Demo Form Reimbursement (Auto-Fill via ReceiptOcrSDK)
+      </h1>
+      <p style="color: #64748b;">
+        Simulasi formulir klaim pengeluaran karyawan. Saat Anda memilih foto struk/nota belanja, <code style="color: #0284c7;">ReceiptOcrSDK</code> akan membaca foto secara otomatis di browser dan **mengisi kolom form di bawah tanpa Anda ketik manual**.
+      </p>
+    </header>
+
+    <div class="demo-card">
+      <h2 style="font-size: 1.2rem; font-weight: 700; color: #0f172a; margin-bottom: 20px;">Formulir Pengajuan Reimbursement</h2>
+
+      <div class="form-group">
+        <label class="form-label">Upload Foto Struk / Nota:</label>
+        <input type="file" id="demoReceiptInput" accept="image/*" class="form-control" style="background: #f8fafc;">
+        <span id="statusBadge" class="status-badge waiting" style="margin-top: 8px;">Menunggu Upload Struk...</span>
+      </div>
+
+      <hr style="margin: 24px 0; border: none; border-top: 1px solid #e2e8f0;">
+
+      <div class="form-group">
+        <label class="form-label">Nama Toko / Merchant (Auto-Filled):</label>
+        <input type="text" id="demoMerchantInput" class="form-control" placeholder="Nama toko akan otomatis terisi...">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Tanggal Transaksi (Auto-Filled):</label>
+        <input type="text" id="demoDateInput" class="form-control" placeholder="DD/MM/YYYY">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Total Biaya Pembayaran (Auto-Filled):</label>
+        <input type="number" id="demoAmountInput" class="form-control" placeholder="0">
+      </div>
+
+      <div style="margin-top: 20px;">
+        <button type="button" class="btn btn-primary" onclick="alert('Form klaim berhasil dikirim!')">Submit Form Reimbursement</button>
+      </div>
+    </div>
+
+    <div class="demo-card">
+      <h3 style="font-size: 1rem; font-weight: 700; color: #0f172a; margin-bottom: 10px;">SDK Console Log:</h3>
+      <div class="log-box" id="logBox">
+        [System Log] SDK siap menerima foto struk...
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { ReceiptOcrSDK } from './src/sdk/ReceiptOcrSDK.js';
+
+    const logBox = document.getElementById('logBox');
+    const statusBadge = document.getElementById('statusBadge');
+
+    function log(msg) {
+      logBox.innerHTML += `<br>[${new Date().toLocaleTimeString()}] ${msg}`;
+      logBox.scrollTop = logBox.scrollHeight;
+    }
+
+    ReceiptOcrSDK.attachToForm('#demoReceiptInput', {
+      merchantInput: '#demoMerchantInput',
+      dateInput: '#demoDateInput',
+      amountInput: '#demoAmountInput'
+    }, {
+      onStart: (file) => {
+        statusBadge.className = 'status-badge scanning';
+        statusBadge.textContent = 'Memproses scan OCR...';
+        log(`Foto struk dipilih: ${file.name}`);
+      },
+      onSuccess: (result) => {
+        statusBadge.className = 'status-badge done';
+        statusBadge.textContent = 'Ekstraksi Selesai (Auto-Filled)';
+        log(`<strong>Status:</strong> Teks struk berhasil dibaca.`);
+        log(`Merchant: <strong>${result.merchant}</strong> | Tanggal: <strong>${result.date}</strong> | Total: <strong>${result.formattedTotal}</strong>`);
+        log(`Kolom form telah terisi otomatis!`);
+      },
+      onError: (err) => {
+        statusBadge.className = 'status-badge waiting';
+        statusBadge.textContent = 'Gagal';
+        log(`Error: ${err.message}`);
+      }
+    });
+  </script>
+</body>
+</html>
